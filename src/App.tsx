@@ -21,8 +21,6 @@ import {
   syncPlayersToCloud,
   fetchCloudData,
   clearCloudData,
-  subscribeToCloudPeladas,
-  subscribeToCloudPlayers,
 } from './lib/firebase';
 import { User as FirebaseUser } from 'firebase/auth';
 
@@ -115,11 +113,7 @@ export const App: React.FC = () => {
     return () => window.removeEventListener('beforeinstallprompt', handleBeforeInstall);
   }, []);
 
-  // Flags to avoid echoing cloud-originated updates straight back to the cloud
-  const isApplyingCloudPlayers = React.useRef(false);
-  const isApplyingCloudPeladas = React.useRef(false);
-
-  // Firebase Auth listener and one-time cloud bootstrap (handles legacy mock-data wipe)
+  // Firebase Auth listener and cloud data bootstrap
   useEffect(() => {
     checkRedirectLogin();
     const unsubscribe = subscribeToAuth(async (user) => {
@@ -127,9 +121,9 @@ export const App: React.FC = () => {
       setAuthChecking(false);
       if (user) {
         setIsCloudSynced(true);
-        // Fetch cloud data once to check for legacy mock data that needs wiping
+        // Fetch cloud data
         const cloudData = await fetchCloudData();
-
+        
         // If cloud contains legacy mock data (e.g. 'p1' or 'pelada-next'), auto wipe it
         const isMockPlayers = cloudData?.players?.some((p) => p.id === 'p1' || p.name === 'Carlos Eduardo');
         const isMockPelada = cloudData?.peladas?.some((p) => p.id === 'pelada-next');
@@ -141,6 +135,17 @@ export const App: React.FC = () => {
           setCurrentPeladaId('');
           setNotifications([]);
           clearAllData();
+          return;
+        }
+
+        if (cloudData?.players && Array.isArray(cloudData.players)) {
+          setPlayers(cloudData.players);
+        }
+        if (cloudData?.peladas && Array.isArray(cloudData.peladas)) {
+          setPeladas(cloudData.peladas);
+          if (cloudData.peladas.length > 0 && !cloudData.peladas.find((p) => p.id === currentPeladaId)) {
+            setCurrentPeladaId(cloudData.peladas[0].id);
+          }
         }
       }
     });
@@ -148,39 +153,9 @@ export const App: React.FC = () => {
     return () => unsubscribe();
   }, []);
 
-  // Real-time listeners: keep peladas & players in sync with Firestore as soon as
-  // anyone (you, on another device, or a teammate) creates/updates them.
-  useEffect(() => {
-    if (!currentUser) return;
-
-    const unsubscribePlayers = subscribeToCloudPlayers((cloudPlayers) => {
-      isApplyingCloudPlayers.current = true;
-      setPlayers(cloudPlayers);
-    });
-
-    const unsubscribePeladas = subscribeToCloudPeladas((cloudPeladas) => {
-      isApplyingCloudPeladas.current = true;
-      setPeladas(cloudPeladas);
-      setCurrentPeladaId((prev) => {
-        if (cloudPeladas.length === 0) return '';
-        if (cloudPeladas.find((p) => p.id === prev)) return prev;
-        return cloudPeladas[0].id;
-      });
-    });
-
-    return () => {
-      unsubscribePlayers();
-      unsubscribePeladas();
-    };
-  }, [currentUser]);
-
   // Sync to storage and cloud on updates
   useEffect(() => {
     savePlayersToStorage(players);
-    if (isApplyingCloudPlayers.current) {
-      isApplyingCloudPlayers.current = false;
-      return;
-    }
     if (currentUser && players.length > 0) {
       syncPlayersToCloud(players);
     }
@@ -188,10 +163,6 @@ export const App: React.FC = () => {
 
   useEffect(() => {
     savePeladasToStorage(peladas);
-    if (isApplyingCloudPeladas.current) {
-      isApplyingCloudPeladas.current = false;
-      return;
-    }
     if (currentUser && peladas.length > 0) {
       syncAllPeladasToCloud(peladas);
     }
@@ -204,25 +175,19 @@ export const App: React.FC = () => {
   // Current active pelada
   const currentPelada = peladas.find((p) => p.id === currentPeladaId) || peladas[0] || null;
 
-  const handleUpdateCurrentPelada = async (updatedPelada: Pelada) => {
+  const handleUpdateCurrentPelada = (updatedPelada: Pelada) => {
     setPeladas((prev) => prev.map((p) => (p.id === updatedPelada.id ? updatedPelada : p)));
     if (currentUser) {
-      const result = await syncPeladaToCloud(updatedPelada);
-      if (!result.success) {
-        alert(`⚠️ Não foi possível salvar as alterações na nuvem (erro: ${result.error}). Suas mudanças ficaram salvas só neste dispositivo por enquanto.`);
-      }
+      syncPeladaToCloud(updatedPelada);
     }
   };
 
-  const handleCreatePelada = async (newPelada: Pelada) => {
+  const handleCreatePelada = (newPelada: Pelada) => {
     setPeladas((prev) => [newPelada, ...prev]);
     setCurrentPeladaId(newPelada.id);
     setActiveTab('overview');
     if (currentUser) {
-      const result = await syncPeladaToCloud(newPelada);
-      if (!result.success) {
-        alert(`⚠️ A pelada foi criada, mas não foi possível salvá-la na nuvem (erro: ${result.error}). Ela pode sumir ao recarregar a página ou não aparecer em outros dispositivos.`);
-      }
+      syncPeladaToCloud(newPelada);
     }
   };
 
@@ -448,7 +413,7 @@ export const App: React.FC = () => {
               <div>
                 <div className="flex items-center gap-1.5 sm:gap-2">
                   <h1 className="text-lg sm:text-2xl font-black text-white tracking-tight flex items-center gap-1.5 font-['Teko',sans-serif] uppercase tracking-wider text-2xl sm:text-3xl leading-none">
-                                        Futebol dos Cria
+                    Futebol dos Cria
                   </h1>
                   <span className="hidden md:inline-block text-[10px] font-black uppercase px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
                     Autorizado
@@ -678,7 +643,6 @@ export const App: React.FC = () => {
             allPlayers={players}
             onUpdatePelada={handleUpdateCurrentPelada}
             onSelectPlayer={(p) => setSelectedPlayer(p)}
-            onAddPlayer={(p) => setPlayers((prev) => [...prev, p])}
             onAddNotification={handleAddNotification}
             onOpenNewPelada={() => setIsNewPeladaModalOpen(true)}
             onOpenUserProfile={() => setIsUserProfileModalOpen(true)}
