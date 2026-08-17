@@ -123,32 +123,36 @@ export const saveUserProfile = async (user: FirebaseUser) => {
 };
 
 // Firestore Sync for Peladas & Players
-export const syncPeladaToCloud = async (pelada: Pelada) => {
+export const syncPeladaToCloud = async (pelada: Pelada): Promise<{ success: boolean; error?: string }> => {
   try {
     const docRef = doc(db, 'peladas', pelada.id);
     await setDoc(docRef, { ...pelada, updatedAt: Timestamp.now() }, { merge: true });
-  } catch (err) {
-    console.warn('Sync pelada error:', err);
+    return { success: true };
+  } catch (err: any) {
+    console.error('Sync pelada error:', err);
+    return { success: false, error: err?.code || err?.message || String(err) };
   }
 };
 
-export const deletePeladaFromCloud = async (peladaId: string) => {
+export const deletePeladaFromCloud = async (peladaId: string): Promise<{ success: boolean; error?: string }> => {
   try {
     const docRef = doc(db, 'peladas', peladaId);
     await deleteDoc(docRef);
-  } catch (err) {
-    console.warn('Delete pelada from cloud error:', err);
+    return { success: true };
+  } catch (err: any) {
+    console.error('Delete pelada from cloud error:', err);
+    return { success: false, error: err?.code || err?.message || String(err) };
   }
 };
 
-export const syncAllPeladasToCloud = async (peladas: Pelada[]) => {
-  try {
-    for (const p of peladas) {
-      await syncPeladaToCloud(p);
+export const syncAllPeladasToCloud = async (peladas: Pelada[]): Promise<{ success: boolean; error?: string }> => {
+  for (const p of peladas) {
+    const result = await syncPeladaToCloud(p);
+    if (!result.success) {
+      return result;
     }
-  } catch (err) {
-    console.warn('Sync all peladas error:', err);
   }
+  return { success: true };
 };
 
 // Sync individual player document as well as the global roster
@@ -282,6 +286,3 @@ export const fetchCloudData = async (): Promise<{
     return null;
   }
 };
-
-
-
