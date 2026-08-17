@@ -1,0 +1,6 @@
+{
+  "name": "Futebol dos Cria",
+  "description": "Plataforma completa para organizar peladas, gerenciar times balanceados, controlar pagamentos e mensalidades, enviar convites automáticos de presença e acompanhar estatísticas, avaliações pós-jogo e rankings dos jogadores.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
