@@ -32,7 +32,6 @@ interface AttendanceManagerProps {
   onUpdatePelada: (updated: Pelada) => void;
   onAddNotification: (notif: NotificationLog) => void;
   onSelectPlayer: (player: Player) => void;
-  onAddPlayer: (player: Player) => void;
   onOpenNewPelada?: () => void;
   onOpenUserProfile?: () => void;
 }
@@ -43,7 +42,6 @@ export const AttendanceManager: React.FC<AttendanceManagerProps> = ({
   onUpdatePelada,
   onAddNotification,
   onSelectPlayer,
-  onAddPlayer,
   onOpenNewPelada,
   onOpenUserProfile,
 }) => {
@@ -265,8 +263,8 @@ export const AttendanceManager: React.FC<AttendanceManagerProps> = ({
       badges: ['Convidado'],
     };
 
-    // Add to players list (via proper state update, so it saves locally and syncs to the cloud) and confirm
-    onAddPlayer(newGuestPlayer);
+    // Add to players list and confirm
+    allPlayers.push(newGuestPlayer);
 
     const targetStatus = confirmedList.length < pelada.maxPlayers ? 'confirmed' : 'waitlist';
     const updatedConfirmed = [
