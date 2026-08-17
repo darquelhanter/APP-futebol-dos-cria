@@ -32,6 +32,7 @@ interface AttendanceManagerProps {
   onUpdatePelada: (updated: Pelada) => void;
   onAddNotification: (notif: NotificationLog) => void;
   onSelectPlayer: (player: Player) => void;
+  onAddPlayer: (player: Player) => void;
   onOpenNewPelada?: () => void;
   onOpenUserProfile?: () => void;
 }
@@ -42,6 +43,7 @@ export const AttendanceManager: React.FC<AttendanceManagerProps> = ({
   onUpdatePelada,
   onAddNotification,
   onSelectPlayer,
+  onAddPlayer,
   onOpenNewPelada,
   onOpenUserProfile,
 }) => {
@@ -49,6 +51,8 @@ export const AttendanceManager: React.FC<AttendanceManagerProps> = ({
   const [copiedKey, setCopiedKey] = useState(false);
   const [copiedMessage, setCopiedMessage] = useState(false);
   const [isAddGuestModalOpen, setIsAddGuestModalOpen] = useState(false);
+  const [addMode, setAddMode] = useState<'existing' | 'new'>('existing');
+  const [selectedExistingPlayerId, setSelectedExistingPlayerId] = useState('');
   const [guestName, setGuestName] = useState('');
   const [guestPosition, setGuestPosition] = useState<'GK' | 'DEF' | 'MID' | 'ATT'>('MID');
   const [guestOverall, setGuestOverall] = useState(75);
@@ -77,6 +81,11 @@ export const AttendanceManager: React.FC<AttendanceManagerProps> = ({
   }
 
   const playersMap = new Map<string, Player>(allPlayers.map((p) => [p.id, p]));
+
+  const confirmedPlayerIds = new Set(pelada.confirmedPlayers.map((cp) => cp.playerId));
+  const availableExistingPlayers = allPlayers
+    .filter((p) => p.active !== false && !confirmedPlayerIds.has(p.id))
+    .sort((a, b) => a.name.localeCompare(b.name));
 
   const confirmedList = pelada.confirmedPlayers.filter((p) => p.status === 'confirmed');
   const waitlistList = pelada.confirmedPlayers.filter((p) => p.status === 'waitlist');
@@ -223,6 +232,32 @@ export const AttendanceManager: React.FC<AttendanceManagerProps> = ({
     setTimeout(() => setCopiedMessage(false), 2000);
   };
 
+  // Confirm an already-registered player onto this pelada (no new profile created)
+  const handleAddExistingPlayer = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedExistingPlayerId) return;
+
+    const targetStatus = confirmedList.length < pelada.maxPlayers ? 'confirmed' : 'waitlist';
+    const updatedConfirmed = [
+      ...pelada.confirmedPlayers,
+      {
+        playerId: selectedExistingPlayerId,
+        status: targetStatus,
+        paymentStatus: 'pending',
+        paidAmount: 0,
+        confirmedAt: new Date().toISOString(),
+      } as ConfirmedPlayer,
+    ];
+
+    onUpdatePelada({
+      ...pelada,
+      confirmedPlayers: updatedConfirmed,
+    });
+
+    setSelectedExistingPlayerId('');
+    setIsAddGuestModalOpen(false);
+  };
+
   // Add guest / avulso player
   const handleAddGuest = (e: React.FormEvent) => {
     e.preventDefault();
@@ -263,8 +298,8 @@ export const AttendanceManager: React.FC<AttendanceManagerProps> = ({
       badges: ['Convidado'],
     };
 
-    // Add to players list and confirm
-    allPlayers.push(newGuestPlayer);
+    // Add to players list (via proper state update, so it saves locally and syncs to the cloud) and confirm
+    onAddPlayer(newGuestPlayer);
 
     const targetStatus = confirmedList.length < pelada.maxPlayers ? 'confirmed' : 'waitlist';
     const updatedConfirmed = [
@@ -343,7 +378,10 @@ export const AttendanceManager: React.FC<AttendanceManagerProps> = ({
             </button>
             <button
               id="btn-open-guest-modal"
-              onClick={() => setIsAddGuestModalOpen(true)}
+              onClick={() => {
+                setAddMode(availableExistingPlayers.length > 0 ? 'existing' : 'new');
+                setIsAddGuestModalOpen(true);
+              }}
               className="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-colors"
             >
               <UserPlus className="w-3.5 h-3.5 text-emerald-400" />
@@ -600,12 +638,86 @@ export const AttendanceManager: React.FC<AttendanceManagerProps> = ({
           >
             <h3 className="text-lg font-black text-white mb-1 flex items-center gap-2">
               <UserPlus className="w-5 h-5 text-emerald-400" />
-              Adicionar Convidado / Diarista
+              Adicionar Jogador à Pelada
             </h3>
             <p className="text-xs text-slate-400 mb-4">
-              Cadastre um jogador avulso para participar desta pelada.
+              Confirme alguém do elenco já cadastrado ou cadastre um convidado novo.
             </p>
 
+            {/* Mode Tabs */}
+            <div className="flex items-center gap-1.5 bg-slate-950 p-1 rounded-2xl border border-slate-800 mb-4">
+              <button
+                type="button"
+                onClick={() => setAddMode('existing')}
+                className={`flex-1 px-3 py-2 rounded-xl text-xs font-bold transition-all ${
+                  addMode === 'existing'
+                    ? 'bg-emerald-600 text-white shadow-md'
+                    : 'text-slate-400 hover:text-slate-200'
+                }`}
+              >
+                Jogador Cadastrado
+              </button>
+              <button
+                type="button"
+                onClick={() => setAddMode('new')}
+                className={`flex-1 px-3 py-2 rounded-xl text-xs font-bold transition-all ${
+                  addMode === 'new'
+                    ? 'bg-emerald-600 text-white shadow-md'
+                    : 'text-slate-400 hover:text-slate-200'
+                }`}
+              >
+                Convidado Novo
+              </button>
+            </div>
+
+            {addMode === 'existing' ? (
+              <form onSubmit={handleAddExistingPlayer} className="space-y-3.5 text-xs">
+                {availableExistingPlayers.length === 0 ? (
+                  <div className="text-center py-8 px-3 rounded-2xl bg-slate-950/60 border border-dashed border-slate-800">
+                    <p className="text-slate-300 font-bold mb-1">Nenhum jogador disponível.</p>
+                    <p className="text-slate-500">
+                      Todo o elenco já está nesta pelada, ou ainda não há jogadores cadastrados. Use a aba "Convidado Novo".
+                    </p>
+                  </div>
+                ) : (
+                  <div>
+                    <label className="text-slate-300 font-bold block mb-1">Selecione o Jogador</label>
+                    <select
+                      required
+                      value={selectedExistingPlayerId}
+                      onChange={(e) => setSelectedExistingPlayerId(e.target.value)}
+                      className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-emerald-500"
+                    >
+                      <option value="" disabled>
+                        Escolha um jogador do elenco...
+                      </option>
+                      {availableExistingPlayers.map((p) => (
+                        <option key={p.id} value={p.id}>
+                          {p.name} · {p.position} · Overall {p.overall} {p.type === 'mensalista' ? '· Mensalista' : ''}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+
+                <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-800">
+                  <button
+                    type="button"
+                    onClick={() => setIsAddGuestModalOpen(false)}
+                    className="px-4 py-2 bg-slate-800 text-slate-300 rounded-xl font-bold hover:bg-slate-700"
+                  >
+                    Cancelar
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={availableExistingPlayers.length === 0}
+                    className="px-5 py-2 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-40 disabled:cursor-not-allowed text-white rounded-xl font-bold shadow-lg transition-colors"
+                  >
+                    Confirmar na Lista
+                  </button>
+                </div>
+              </form>
+            ) : (
             <form onSubmit={handleAddGuest} className="space-y-3.5 text-xs">
               <div>
                 <label className="text-slate-300 font-bold block mb-1">Nome / Apelido</label>
@@ -673,6 +785,7 @@ export const AttendanceManager: React.FC<AttendanceManagerProps> = ({
                 </button>
               </div>
             </form>
+            )}
           </div>
         </div>
       )}
