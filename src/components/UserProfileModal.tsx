@@ -67,11 +67,12 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
 }) => {
   if (!isOpen) return null;
 
-  // Find existing player linked to this user (by UID, email, or name)
+  // Find existing player linked to this user (by UID or email only — matching by
+  // display name would let a different account claim someone else's card just
+  // because they share a name, reassigning that card's userId/userEmail on save)
   const existingPlayer = players.find((p) => {
     if (currentUser?.uid && p.userId === currentUser.uid) return true;
     if (currentUser?.email && p.userEmail === currentUser.email) return true;
-    if (currentUser?.displayName && p.name.toLowerCase() === currentUser.displayName.toLowerCase()) return true;
     return false;
   });
 
@@ -214,34 +215,34 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
   return (
     <div
       id="user-profile-modal-overlay"
-      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-950/85 backdrop-blur-md overflow-y-auto"
+      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-gramado/85 backdrop-blur-md overflow-y-auto"
       onClick={onClose}
     >
       <div
         id="user-profile-modal-card"
-        className="relative w-full max-w-3xl bg-slate-900 border border-slate-800 rounded-3xl overflow-hidden shadow-2xl my-auto shadow-emerald-950/40"
+        className="relative w-full max-w-3xl bg-gramado-card border border-gramado-light rounded-3xl overflow-hidden shadow-2xl my-auto shadow-gramado-card/40"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Top Header Banner */}
-        <div className="relative p-5 sm:p-6 bg-gradient-to-r from-emerald-950 via-slate-900 to-indigo-950 border-b border-slate-800 flex items-center justify-between">
+        <div className="relative p-5 sm:p-6 bg-gradient-to-r from-gramado-card via-gramado-card to-gramado-light border-b border-gramado-light flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-emerald-500 to-teal-400 p-0.5 shadow-lg shadow-emerald-500/25 shrink-0 flex items-center justify-center">
-              <div className="w-full h-full bg-slate-950 rounded-[14px] flex items-center justify-center text-emerald-400">
+            <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-capim to-barro p-0.5 shadow-lg shadow-capim/25 shrink-0 flex items-center justify-center">
+              <div className="w-full h-full bg-gramado rounded-[14px] flex items-center justify-center text-capim-light">
                 <Crown className="w-6 h-6" />
               </div>
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-black uppercase tracking-wider border border-emerald-500/30">
+                <span className="px-2.5 py-0.5 rounded-full bg-capim/20 text-capim-light text-[10px] font-black uppercase tracking-wider border border-capim/30">
                   {existingPlayer ? 'Editar Meu Perfil' : 'Criar Meu Cartão'}
                 </span>
                 {currentUser && (
-                  <span className="text-[11px] text-slate-400 hidden sm:inline">
-                    Conectado como <strong className="text-emerald-300">{currentUser.displayName || currentUser.email}</strong>
+                  <span className="text-[11px] text-giz/50 hidden sm:inline">
+                    Conectado como <strong className="text-capim-light">{currentUser.displayName || currentUser.email}</strong>
                   </span>
                 )}
               </div>
-              <h2 className="text-xl sm:text-2xl font-black text-white font-['Teko',sans-serif] uppercase tracking-wider leading-none mt-1">
+              <h2 className="text-xl sm:text-2xl font-black text-giz font-['Teko',sans-serif] uppercase tracking-wider leading-none mt-1">
                 {existingPlayer ? 'Personalizar Meu Perfil de Jogador' : 'Crie seu Perfil Oficial de Cria'}
               </h2>
             </div>
@@ -249,7 +250,7 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
 
           <button
             onClick={onClose}
-            className="p-2 text-slate-400 hover:text-white rounded-full bg-slate-800/80 hover:bg-slate-800 transition-colors"
+            className="p-2 text-giz/50 hover:text-giz rounded-full bg-gramado-light/80 hover:bg-gramado-light transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -257,9 +258,9 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
 
         {/* Not Logged In Banner with 1-Click Login Option */}
         {!currentUser && (
-          <div className="mx-5 sm:mx-6 mt-4 p-3.5 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex flex-col sm:flex-row items-center justify-between gap-3">
-            <div className="flex items-center gap-2.5 text-xs text-slate-300">
-              <Sparkles className="w-4 h-4 text-emerald-400 shrink-0" />
+          <div className="mx-5 sm:mx-6 mt-4 p-3.5 rounded-2xl bg-capim/10 border border-capim/30 flex flex-col sm:flex-row items-center justify-between gap-3">
+            <div className="flex items-center gap-2.5 text-xs text-giz/70">
+              <Sparkles className="w-4 h-4 text-capim-light shrink-0" />
               <span>
                 Faça login com sua conta Google para salvar seu perfil na nuvem e sincronizar em qualquer celular.
               </span>
@@ -273,7 +274,7 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
                   if (onOpenAuth) onOpenAuth();
                 }
               }}
-              className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-black flex items-center gap-1.5 shadow-md transition-all active:scale-95 shrink-0"
+              className="px-4 py-2 bg-capim hover:bg-capim text-giz rounded-xl text-xs font-black flex items-center gap-1.5 shadow-md transition-all active:scale-95 shrink-0"
             >
               <LogIn className="w-3.5 h-3.5" />
               <span>Entrar com Google</span>
@@ -285,13 +286,13 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
             {/* LEFT COLUMN: LIVE FUT CARD PREVIEW */}
             <div className="lg:col-span-5 flex flex-col items-center justify-start">
-              <div className="text-xs font-black uppercase tracking-wider text-slate-400 mb-2 flex items-center gap-1.5">
+              <div className="text-xs font-black uppercase tracking-wider text-giz/50 mb-2 flex items-center gap-1.5">
                 <Flame className="w-3.5 h-3.5 text-amber-400" />
                 <span>Prévia do seu Cartão</span>
               </div>
 
               {/* FIFA Ultimate Team Style Card */}
-              <div className="w-64 sm:w-68 rounded-3xl p-4 bg-gradient-to-b from-amber-500/20 via-slate-900 to-slate-950 border-2 border-amber-500/40 shadow-2xl shadow-amber-500/10 relative overflow-hidden flex flex-col items-center">
+              <div className="w-64 sm:w-68 rounded-3xl p-4 bg-gradient-to-b from-amber-500/20 via-gramado-card to-gramado border-2 border-amber-500/40 shadow-2xl shadow-amber-500/10 relative overflow-hidden flex flex-col items-center">
                 {/* Glow accent */}
                 <div className="absolute -top-12 left-1/2 -translate-x-1/2 w-40 h-40 bg-amber-500/15 rounded-full blur-2xl pointer-events-none" />
 
@@ -311,7 +312,7 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
                     <img
                       src={photoUrl}
                       alt={name || 'Avatar'}
-                      className="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl object-cover border-2 border-amber-400/60 shadow-xl bg-slate-800"
+                      className="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl object-cover border-2 border-amber-400/60 shadow-xl bg-gramado-light"
                       onError={(e) => {
                         (e.target as HTMLImageElement).src = AVATAR_PRESETS[0].url;
                       }}
@@ -319,7 +320,7 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
                     <button
                       type="button"
                       onClick={() => setShowPhotoPicker(!showPhotoPicker)}
-                      className="absolute -bottom-2 -right-2 p-1.5 bg-slate-900 border border-amber-400 text-amber-300 rounded-full hover:bg-slate-800 transition-transform active:scale-90 shadow-md"
+                      className="absolute -bottom-2 -right-2 p-1.5 bg-gramado-card border border-amber-400 text-amber-300 rounded-full hover:bg-gramado-light transition-transform active:scale-90 shadow-md"
                       title="Mudar Foto"
                     >
                       <ImageIcon className="w-3.5 h-3.5" />
@@ -329,10 +330,10 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
 
                 {/* Nickname / Name on Card */}
                 <div className="text-center relative z-10 my-2 w-full">
-                  <h3 className="text-xl sm:text-2xl font-black text-white font-['Teko',sans-serif] uppercase tracking-wider truncate">
+                  <h3 className="text-xl sm:text-2xl font-black text-giz font-['Teko',sans-serif] uppercase tracking-wider truncate">
                     {nickname || name || 'Seu Nome'}
                   </h3>
-                  <div className="flex items-center justify-center gap-1.5 text-[11px] text-slate-300">
+                  <div className="flex items-center justify-center gap-1.5 text-[11px] text-giz/70">
                     <span className="capitalize">{type}</span>
                     <span>•</span>
                     <span className="capitalize">Pé {dominantFoot}</span>
@@ -341,28 +342,28 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
 
                 {/* 6 Stats Grid */}
                 <div className="w-full grid grid-cols-2 gap-x-3 gap-y-1 pt-2 border-t border-amber-500/20 text-xs relative z-10">
-                  <div className="flex items-center justify-between px-2 py-1 rounded-lg bg-slate-900/80">
-                    <span className="text-slate-400 font-bold">PAC</span>
+                  <div className="flex items-center justify-between px-2 py-1 rounded-lg bg-gramado-card/80">
+                    <span className="text-giz/50 font-bold">PAC</span>
                     <span className="font-black text-amber-400">{pace}</span>
                   </div>
-                  <div className="flex items-center justify-between px-2 py-1 rounded-lg bg-slate-900/80">
-                    <span className="text-slate-400 font-bold">DRI</span>
+                  <div className="flex items-center justify-between px-2 py-1 rounded-lg bg-gramado-card/80">
+                    <span className="text-giz/50 font-bold">DRI</span>
                     <span className="font-black text-amber-400">{dribble}</span>
                   </div>
-                  <div className="flex items-center justify-between px-2 py-1 rounded-lg bg-slate-900/80">
-                    <span className="text-slate-400 font-bold">SHO</span>
+                  <div className="flex items-center justify-between px-2 py-1 rounded-lg bg-gramado-card/80">
+                    <span className="text-giz/50 font-bold">SHO</span>
                     <span className="font-black text-amber-400">{shoot}</span>
                   </div>
-                  <div className="flex items-center justify-between px-2 py-1 rounded-lg bg-slate-900/80">
-                    <span className="text-slate-400 font-bold">DEF</span>
+                  <div className="flex items-center justify-between px-2 py-1 rounded-lg bg-gramado-card/80">
+                    <span className="text-giz/50 font-bold">DEF</span>
                     <span className="font-black text-amber-400">{def}</span>
                   </div>
-                  <div className="flex items-center justify-between px-2 py-1 rounded-lg bg-slate-900/80">
-                    <span className="text-slate-400 font-bold">PAS</span>
+                  <div className="flex items-center justify-between px-2 py-1 rounded-lg bg-gramado-card/80">
+                    <span className="text-giz/50 font-bold">PAS</span>
                     <span className="font-black text-amber-400">{pass}</span>
                   </div>
-                  <div className="flex items-center justify-between px-2 py-1 rounded-lg bg-slate-900/80">
-                    <span className="text-slate-400 font-bold">PHY</span>
+                  <div className="flex items-center justify-between px-2 py-1 rounded-lg bg-gramado-card/80">
+                    <span className="text-giz/50 font-bold">PHY</span>
                     <span className="font-black text-amber-400">{physical}</span>
                   </div>
                 </div>
@@ -384,13 +385,13 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
 
               {/* Photo selector dropdown / popover */}
               {showPhotoPicker && (
-                <div className="mt-3 p-3 w-full max-w-xs bg-slate-950 border border-slate-800 rounded-2xl shadow-xl space-y-2">
-                  <div className="text-[11px] font-bold text-slate-300 flex items-center justify-between">
+                <div className="mt-3 p-3 w-full max-w-xs bg-gramado border border-gramado-light rounded-2xl shadow-xl space-y-2">
+                  <div className="text-[11px] font-bold text-giz/70 flex items-center justify-between">
                     <span>Escolher Avatar Rápido</span>
                     <button
                       type="button"
                       onClick={() => setShowPhotoPicker(false)}
-                      className="text-slate-400 hover:text-white"
+                      className="text-giz/50 hover:text-giz"
                     >
                       <X className="w-3.5 h-3.5" />
                     </button>
@@ -405,7 +406,7 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
                           setShowPhotoPicker(false);
                         }}
                         className={`relative rounded-xl overflow-hidden border-2 transition-transform active:scale-95 ${
-                          photoUrl === preset.url ? 'border-amber-400 scale-105' : 'border-slate-800'
+                          photoUrl === preset.url ? 'border-amber-400 scale-105' : 'border-gramado-light'
                         }`}
                       >
                         <img src={preset.url} alt={preset.label} className="w-full h-12 object-cover" />
@@ -419,7 +420,7 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
                         setPhotoUrl(currentUser.photoURL!);
                         setShowPhotoPicker(false);
                       }}
-                      className="w-full py-1.5 px-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-[10px] font-bold text-emerald-400 border border-slate-800 flex items-center justify-center gap-1"
+                      className="w-full py-1.5 px-2 rounded-xl bg-gramado-card hover:bg-gramado-light text-[10px] font-bold text-capim-light border border-gramado-light flex items-center justify-center gap-1"
                     >
                       <User className="w-3 h-3" /> Usar Foto do Google
                     </button>
@@ -435,7 +436,7 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
                           setPhotoUrl(customPhotoInput.trim());
                         }
                       }}
-                      className="w-full bg-slate-900 border border-slate-700 rounded-xl px-2 py-1 text-[11px] text-white focus:outline-none focus:border-amber-400"
+                      className="w-full bg-gramado-card border border-giz/15 rounded-xl px-2 py-1 text-[11px] text-giz focus:outline-none focus:border-amber-400"
                     />
                   </div>
                 </div>
@@ -447,35 +448,35 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
               {/* Basic Details Grid */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="text-slate-300 font-bold block mb-1">Nome Completo *</label>
+                  <label className="text-giz/70 font-bold block mb-1">Nome Completo *</label>
                   <input
                     type="text"
                     required
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     placeholder="Ex: Carlos Eduardo"
-                    className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-emerald-500 font-medium"
+                    className="w-full bg-gramado border border-giz/15 rounded-xl px-3 py-2 text-giz focus:outline-none focus:border-capim font-medium"
                   />
                 </div>
 
                 <div>
-                  <label className="text-slate-300 font-bold block mb-1">Apelido na Camisa *</label>
+                  <label className="text-giz/70 font-bold block mb-1">Apelido na Camisa *</label>
                   <input
                     type="text"
                     required
                     value={nickname}
                     onChange={(e) => setNickname(e.target.value)}
                     placeholder="Ex: Carlinhos / Cadu"
-                    className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-emerald-500 font-bold text-amber-400"
+                    className="w-full bg-gramado border border-giz/15 rounded-xl px-3 py-2 text-giz focus:outline-none focus:border-capim font-bold text-amber-400"
                   />
                 </div>
 
                 <div>
-                  <label className="text-slate-300 font-bold block mb-1">Posição Principal</label>
+                  <label className="text-giz/70 font-bold block mb-1">Posição Principal</label>
                   <select
                     value={position}
                     onChange={(e) => setPosition(e.target.value as PlayerPosition)}
-                    className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-emerald-500 font-bold text-emerald-400"
+                    className="w-full bg-gramado border border-giz/15 rounded-xl px-3 py-2 text-giz focus:outline-none focus:border-capim font-bold text-capim-light"
                   >
                     <option value="GK">🧤 Goleiro (GK)</option>
                     <option value="DEF">🛡️ Zagueiro / Lateral (DEF)</option>
@@ -485,11 +486,11 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
                 </div>
 
                 <div>
-                  <label className="text-slate-300 font-bold block mb-1">Pé Dominante</label>
+                  <label className="text-giz/70 font-bold block mb-1">Pé Dominante</label>
                   <select
                     value={dominantFoot}
                     onChange={(e) => setDominantFoot(e.target.value as Foot)}
-                    className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-emerald-500"
+                    className="w-full bg-gramado border border-giz/15 rounded-xl px-3 py-2 text-giz focus:outline-none focus:border-capim"
                   >
                     <option value="destro">Destro (Pé Direito)</option>
                     <option value="canhoto">Canhoto (Pé Esquerdo)</option>
@@ -498,15 +499,15 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
                 </div>
 
                 <div>
-                  <label className="text-slate-300 font-bold block mb-1">Tipo de Jogador</label>
+                  <label className="text-giz/70 font-bold block mb-1">Tipo de Jogador</label>
                   <div className="grid grid-cols-2 gap-2">
                     <button
                       type="button"
                       onClick={() => setType('mensalista')}
                       className={`py-2 px-3 rounded-xl border font-bold text-xs transition-all ${
                         type === 'mensalista'
-                          ? 'bg-emerald-500/20 border-emerald-500 text-emerald-300'
-                          : 'bg-slate-950 border-slate-800 text-slate-400'
+                          ? 'bg-capim/20 border-capim text-capim-light'
+                          : 'bg-gramado border-gramado-light text-giz/50'
                       }`}
                     >
                       👑 Mensalista
@@ -517,7 +518,7 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
                       className={`py-2 px-3 rounded-xl border font-bold text-xs transition-all ${
                         type === 'diarista'
                           ? 'bg-amber-500/20 border-amber-500 text-amber-300'
-                          : 'bg-slate-950 border-slate-800 text-slate-400'
+                          : 'bg-gramado border-gramado-light text-giz/50'
                       }`}
                     >
                       ⚽ Diarista / Avulso
@@ -526,32 +527,32 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
                 </div>
 
                 <div>
-                  <label className="text-slate-300 font-bold block mb-1">WhatsApp / Telefone</label>
+                  <label className="text-giz/70 font-bold block mb-1">WhatsApp / Telefone</label>
                   <input
                     type="tel"
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
                     placeholder="(11) 99999-9999"
-                    className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-emerald-500"
+                    className="w-full bg-gramado border border-giz/15 rounded-xl px-3 py-2 text-giz focus:outline-none focus:border-capim"
                   />
                 </div>
               </div>
 
               {/* Skills & Attributes Sliders */}
-              <div className="p-4 rounded-2xl bg-slate-950/80 border border-slate-800 space-y-3">
+              <div className="p-4 rounded-2xl bg-gramado/80 border border-gramado-light space-y-3">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-black uppercase tracking-wider text-amber-400 flex items-center gap-1.5">
                     <Zap className="w-3.5 h-3.5" />
                     <span>Seus Atributos de Jogo (40 a 99)</span>
                   </span>
-                  <span className="text-xs font-black text-white bg-slate-900 px-2 py-0.5 rounded-md border border-slate-700">
+                  <span className="text-xs font-black text-giz bg-gramado-card px-2 py-0.5 rounded-md border border-giz/15">
                     OVR Calculado: <strong className="text-amber-400">{overall}</strong>
                   </span>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2.5">
                   <div>
-                    <div className="flex justify-between text-[11px] font-bold text-slate-300 mb-0.5">
+                    <div className="flex justify-between text-[11px] font-bold text-giz/70 mb-0.5">
                       <span>⚡ Velocidade / Pique (PAC)</span>
                       <span className="text-amber-400 font-black">{pace}</span>
                     </div>
@@ -561,12 +562,12 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
                       max="99"
                       value={pace}
                       onChange={(e) => setPace(Number(e.target.value))}
-                      className="w-full accent-amber-400 h-1.5 bg-slate-800 rounded-lg cursor-pointer"
+                      className="w-full accent-amber-400 h-1.5 bg-gramado-light rounded-lg cursor-pointer"
                     />
                   </div>
 
                   <div>
-                    <div className="flex justify-between text-[11px] font-bold text-slate-300 mb-0.5">
+                    <div className="flex justify-between text-[11px] font-bold text-giz/70 mb-0.5">
                       <span>🪄 Drible & Agilidade (DRI)</span>
                       <span className="text-amber-400 font-black">{dribble}</span>
                     </div>
@@ -576,12 +577,12 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
                       max="99"
                       value={dribble}
                       onChange={(e) => setDribble(Number(e.target.value))}
-                      className="w-full accent-amber-400 h-1.5 bg-slate-800 rounded-lg cursor-pointer"
+                      className="w-full accent-amber-400 h-1.5 bg-gramado-light rounded-lg cursor-pointer"
                     />
                   </div>
 
                   <div>
-                    <div className="flex justify-between text-[11px] font-bold text-slate-300 mb-0.5">
+                    <div className="flex justify-between text-[11px] font-bold text-giz/70 mb-0.5">
                       <span>🎯 Chute & Finalização (SHO)</span>
                       <span className="text-amber-400 font-black">{shoot}</span>
                     </div>
@@ -591,12 +592,12 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
                       max="99"
                       value={shoot}
                       onChange={(e) => setShoot(Number(e.target.value))}
-                      className="w-full accent-amber-400 h-1.5 bg-slate-800 rounded-lg cursor-pointer"
+                      className="w-full accent-amber-400 h-1.5 bg-gramado-light rounded-lg cursor-pointer"
                     />
                   </div>
 
                   <div>
-                    <div className="flex justify-between text-[11px] font-bold text-slate-300 mb-0.5">
+                    <div className="flex justify-between text-[11px] font-bold text-giz/70 mb-0.5">
                       <span>🛡️ Defesa & Desarme (DEF)</span>
                       <span className="text-amber-400 font-black">{def}</span>
                     </div>
@@ -606,12 +607,12 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
                       max="99"
                       value={def}
                       onChange={(e) => setDef(Number(e.target.value))}
-                      className="w-full accent-amber-400 h-1.5 bg-slate-800 rounded-lg cursor-pointer"
+                      className="w-full accent-amber-400 h-1.5 bg-gramado-light rounded-lg cursor-pointer"
                     />
                   </div>
 
                   <div>
-                    <div className="flex justify-between text-[11px] font-bold text-slate-300 mb-0.5">
+                    <div className="flex justify-between text-[11px] font-bold text-giz/70 mb-0.5">
                       <span>👟 Passe & Visão (PAS)</span>
                       <span className="text-amber-400 font-black">{pass}</span>
                     </div>
@@ -621,12 +622,12 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
                       max="99"
                       value={pass}
                       onChange={(e) => setPass(Number(e.target.value))}
-                      className="w-full accent-amber-400 h-1.5 bg-slate-800 rounded-lg cursor-pointer"
+                      className="w-full accent-amber-400 h-1.5 bg-gramado-light rounded-lg cursor-pointer"
                     />
                   </div>
 
                   <div>
-                    <div className="flex justify-between text-[11px] font-bold text-slate-300 mb-0.5">
+                    <div className="flex justify-between text-[11px] font-bold text-giz/70 mb-0.5">
                       <span>💪 Físico & Resistência (PHY)</span>
                       <span className="text-amber-400 font-black">{physical}</span>
                     </div>
@@ -636,15 +637,15 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
                       max="99"
                       value={physical}
                       onChange={(e) => setPhysical(Number(e.target.value))}
-                      className="w-full accent-amber-400 h-1.5 bg-slate-800 rounded-lg cursor-pointer"
+                      className="w-full accent-amber-400 h-1.5 bg-gramado-light rounded-lg cursor-pointer"
                     />
                   </div>
                 </div>
               </div>
 
               {/* Characteristics & Badges */}
-              <div className="p-3.5 rounded-2xl bg-slate-950/80 border border-slate-800 space-y-2">
-                <label className="text-xs font-bold text-slate-300 block">
+              <div className="p-3.5 rounded-2xl bg-gramado/80 border border-gramado-light space-y-2">
+                <label className="text-xs font-bold text-giz/70 block">
                   Tags & Características Marcantes (Máx 5):
                 </label>
                 <div className="flex flex-wrap gap-1.5">
@@ -655,8 +656,8 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
                       onClick={() => handleToggleBadge(b)}
                       className={`px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all ${
                         badges.includes(b)
-                          ? 'bg-emerald-500 text-slate-950 shadow-sm'
-                          : 'bg-slate-900 text-slate-400 border border-slate-800 hover:border-slate-700'
+                          ? 'bg-capim text-gramado shadow-sm'
+                          : 'bg-gramado-card text-giz/50 border border-gramado-light hover:border-giz/15'
                       }`}
                     >
                       {b}
@@ -676,12 +677,12 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
                         handleAddCustomBadge();
                       }
                     }}
-                    className="flex-1 bg-slate-900 border border-slate-700 rounded-xl px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-emerald-500"
+                    className="flex-1 bg-gramado-card border border-giz/15 rounded-xl px-2.5 py-1.5 text-xs text-giz focus:outline-none focus:border-capim"
                   />
                   <button
                     type="button"
                     onClick={handleAddCustomBadge}
-                    className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-white rounded-xl text-xs font-bold border border-slate-700"
+                    className="px-3 py-1.5 bg-gramado-light hover:bg-giz/15 text-giz rounded-xl text-xs font-bold border border-giz/15"
                   >
                     + Add
                   </button>
@@ -691,15 +692,15 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
           </div>
 
           {successSaved && (
-            <div className="p-3 rounded-2xl bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 text-xs font-bold flex items-center justify-center gap-2">
+            <div className="p-3 rounded-2xl bg-capim/20 border border-capim/40 text-capim-light text-xs font-bold flex items-center justify-center gap-2">
               <CheckCircle2 className="w-4 h-4" />
               <span>Perfil salvo e sincronizado com sucesso!</span>
             </div>
           )}
 
           {/* Modal Footer Actions */}
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-3 border-t border-slate-800">
-            <div className="text-[11px] text-slate-400 text-center sm:text-left">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-3 border-t border-gramado-light">
+            <div className="text-[11px] text-giz/50 text-center sm:text-left">
               Seu perfil será exibido nas convocações, sorteios e estatísticas da pelada.
             </div>
 
@@ -707,13 +708,13 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
               <button
                 type="button"
                 onClick={onClose}
-                className="flex-1 sm:flex-none px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl font-bold transition-colors text-xs"
+                className="flex-1 sm:flex-none px-4 py-2.5 bg-gramado-light hover:bg-giz/15 text-giz/70 rounded-xl font-bold transition-colors text-xs"
               >
                 Cancelar
               </button>
               <button
                 type="submit"
-                className="flex-1 sm:flex-none px-6 py-2.5 bg-gradient-to-r from-emerald-500 to-teal-400 hover:from-emerald-400 hover:to-teal-300 text-slate-950 rounded-xl font-black text-xs shadow-lg shadow-emerald-500/25 flex items-center justify-center gap-1.5 transition-all active:scale-95"
+                className="flex-1 sm:flex-none px-6 py-2.5 bg-gradient-to-r from-capim to-barro hover:from-capim-light hover:to-barro text-gramado rounded-xl font-black text-xs shadow-lg shadow-capim/25 flex items-center justify-center gap-1.5 transition-all active:scale-95"
               >
                 <Save className="w-4 h-4" />
                 <span>Salvar Meu Perfil</span>

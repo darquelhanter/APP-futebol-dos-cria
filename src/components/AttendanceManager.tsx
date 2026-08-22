@@ -30,6 +30,7 @@ interface AttendanceManagerProps {
   pelada?: Pelada | null;
   allPlayers: Player[];
   onUpdatePelada: (updated: Pelada) => void;
+  onAddPlayer: (player: Player) => void;
   onAddNotification: (notif: NotificationLog) => void;
   onSelectPlayer: (player: Player) => void;
   onOpenNewPelada?: () => void;
@@ -40,6 +41,7 @@ export const AttendanceManager: React.FC<AttendanceManagerProps> = ({
   pelada,
   allPlayers,
   onUpdatePelada,
+  onAddPlayer,
   onAddNotification,
   onSelectPlayer,
   onOpenNewPelada,
@@ -56,18 +58,18 @@ export const AttendanceManager: React.FC<AttendanceManagerProps> = ({
 
   if (!pelada) {
     return (
-      <div className="rounded-3xl bg-slate-900 border border-slate-800 p-8 sm:p-12 text-center max-w-xl mx-auto my-8 shadow-2xl">
-        <Users className="w-16 h-16 text-emerald-400 mx-auto mb-4" />
-        <h2 className="text-2xl font-black text-white font-['Teko',sans-serif] uppercase tracking-wider text-3xl">
+      <div className="rounded-3xl bg-gramado-card border border-gramado-light p-8 sm:p-12 text-center max-w-xl mx-auto my-8 shadow-2xl">
+        <Users className="w-16 h-16 text-capim-light mx-auto mb-4" />
+        <h2 className="text-2xl font-black text-giz font-['Teko',sans-serif] uppercase tracking-wider text-3xl">
           Nenhuma Pelada para Gerenciar Presenças
         </h2>
-        <p className="text-xs sm:text-sm text-slate-300 mt-2 mb-6">
+        <p className="text-xs sm:text-sm text-giz/70 mt-2 mb-6">
           Crie ou selecione uma pelada para acompanhar confirmações, lista de espera e pagamentos PIX.
         </p>
         {onOpenNewPelada && (
           <button
             onClick={onOpenNewPelada}
-            className="px-6 py-3.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-2xl text-sm font-black transition-all active:scale-95"
+            className="px-6 py-3.5 bg-capim hover:bg-capim text-giz rounded-2xl text-sm font-black transition-all active:scale-95"
           >
             + Agendar Pelada
           </button>
@@ -264,7 +266,7 @@ export const AttendanceManager: React.FC<AttendanceManagerProps> = ({
     };
 
     // Add to players list and confirm
-    allPlayers.push(newGuestPlayer);
+    onAddPlayer(newGuestPlayer);
 
     const targetStatus = confirmedList.length < pelada.maxPlayers ? 'confirmed' : 'waitlist';
     const updatedConfirmed = [
@@ -291,32 +293,32 @@ export const AttendanceManager: React.FC<AttendanceManagerProps> = ({
   return (
     <div className="space-y-6">
       {/* Top Banner: Status & Quick WhatsApp Actions */}
-      <div className="bg-gradient-to-r from-slate-900 via-slate-900/95 to-slate-950 p-5 rounded-3xl border border-slate-800 shadow-xl">
+      <div className="bg-gradient-to-r from-gramado-card via-gramado-card/95 to-gramado p-5 rounded-3xl border border-gramado-light shadow-xl">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
             <div className="flex items-center gap-2 mb-1">
-              <span className="text-xs font-black uppercase tracking-wider text-emerald-400 bg-emerald-500/10 px-2.5 py-0.5 rounded-full border border-emerald-500/30">
+              <span className="text-xs font-black uppercase tracking-wider text-capim-light bg-capim/10 px-2.5 py-0.5 rounded-full border border-capim/30">
                 Lista de Presença
               </span>
-              <span className="text-xs text-slate-400">
+              <span className="text-xs text-giz/50">
                 {formatDateBR(pelada.date)} às {pelada.time}h • {pelada.location}
               </span>
             </div>
-            <h2 className="text-xl sm:text-2xl font-black text-white flex items-center gap-2">
-              <Users className="w-6 h-6 text-emerald-400" />
+            <h2 className="text-xl sm:text-2xl font-black text-giz flex items-center gap-2">
+              <Users className="w-6 h-6 text-capim-light" />
               <span>{confirmedList.length} de {pelada.maxPlayers} Jogadores Confirmados</span>
             </h2>
-            <div className="flex items-center gap-3 text-xs text-slate-300 mt-2">
-              <span className="flex items-center gap-1 font-bold text-emerald-400">
+            <div className="flex items-center gap-3 text-xs text-giz/70 mt-2">
+              <span className="flex items-center gap-1 font-bold text-capim-light">
                 <CheckCircle2 className="w-3.5 h-3.5" /> {confirmedList.length} confirmados
               </span>
               <span className="flex items-center gap-1 font-bold text-amber-400">
                 <Clock className="w-3.5 h-3.5" /> {waitlistList.length} na espera
               </span>
-              <span className="flex items-center gap-1 font-bold text-slate-400">
+              <span className="flex items-center gap-1 font-bold text-giz/50">
                 <HelpCircle className="w-3.5 h-3.5" /> {pendingList.length} pendentes
               </span>
-              <span className={`px-2 py-0.5 rounded-md font-bold text-xs ${spotsLeft === 0 ? 'bg-rose-500/20 text-rose-300 border border-rose-500/40' : 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40'}`}>
+              <span className={`px-2 py-0.5 rounded-md font-bold text-xs ${spotsLeft === 0 ? 'bg-rose-500/20 text-rose-300 border border-rose-500/40' : 'bg-capim/20 text-capim-light border border-capim/40'}`}>
                 {spotsLeft === 0 ? '⛔ Vagas Esgotadas' : `🔥 ${spotsLeft} vagas restantes`}
               </span>
             </div>
@@ -327,7 +329,7 @@ export const AttendanceManager: React.FC<AttendanceManagerProps> = ({
             <button
               id="btn-broadcast-convocacao"
               onClick={() => handleTriggerAutoNotification('convite_24h')}
-              className="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-lg shadow-emerald-600/20 transition-all"
+              className="px-3.5 py-2 bg-capim hover:bg-capim text-giz rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-lg shadow-capim/20 transition-all"
               title="Disparar lista formatada no WhatsApp"
             >
               <Send className="w-3.5 h-3.5" />
@@ -336,17 +338,17 @@ export const AttendanceManager: React.FC<AttendanceManagerProps> = ({
             <button
               id="btn-copy-whatsapp-list"
               onClick={handleCopyWhatsAppList}
-              className="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-colors"
+              className="px-3 py-2 bg-gramado-light hover:bg-giz/15 text-giz/85 border border-giz/15 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-colors"
             >
-              {copiedMessage ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+              {copiedMessage ? <Check className="w-3.5 h-3.5 text-capim-light" /> : <Copy className="w-3.5 h-3.5" />}
               {copiedMessage ? 'Copiado!' : 'Copiar Texto'}
             </button>
             <button
               id="btn-open-guest-modal"
               onClick={() => setIsAddGuestModalOpen(true)}
-              className="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-colors"
+              className="px-3 py-2 bg-gramado-light hover:bg-giz/15 text-giz/85 border border-giz/15 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-colors"
             >
-              <UserPlus className="w-3.5 h-3.5 text-emerald-400" />
+              <UserPlus className="w-3.5 h-3.5 text-capim-light" />
               + Convidado
             </button>
             {onOpenUserProfile && (
@@ -365,10 +367,10 @@ export const AttendanceManager: React.FC<AttendanceManagerProps> = ({
 
         {/* Progress Bar of Capacity */}
         <div className="mt-4">
-          <div className="h-2 w-full bg-slate-800 rounded-full overflow-hidden">
+          <div className="h-2 w-full bg-gramado-light rounded-full overflow-hidden">
             <div
               className={`h-full transition-all duration-500 rounded-full ${
-                confirmedList.length >= pelada.maxPlayers ? 'bg-rose-500' : 'bg-emerald-500'
+                confirmedList.length >= pelada.maxPlayers ? 'bg-rose-500' : 'bg-capim'
               }`}
               style={{ width: `${Math.min(100, (confirmedList.length / pelada.maxPlayers) * 100)}%` }}
             />
@@ -377,23 +379,23 @@ export const AttendanceManager: React.FC<AttendanceManagerProps> = ({
       </div>
 
       {/* PIX Quick Box Banner */}
-      <div className="bg-slate-900/90 border border-slate-800 p-4 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+      <div className="bg-gramado-card/90 border border-gramado-light p-4 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
+          <div className="w-10 h-10 rounded-xl bg-capim/10 border border-capim/30 flex items-center justify-center text-capim-light">
             <DollarSign className="w-5 h-5" />
           </div>
           <div>
-            <p className="text-xs font-extrabold text-white">Chave PIX da Pelada ({pelada.pixKeyType}): <span className="text-emerald-400 font-mono">{pelada.pixKey}</span></p>
-            <p className="text-[11px] text-slate-400">Favorecido: {pelada.pixReceiverName} • Mensalistas: {formatCurrency(pelada.priceMensalista)} | Diaristas: {formatCurrency(pelada.priceDiarista)}</p>
+            <p className="text-xs font-extrabold text-giz">Chave PIX da Pelada ({pelada.pixKeyType}): <span className="text-capim-light font-mono">{pelada.pixKey}</span></p>
+            <p className="text-[11px] text-giz/50">Favorecido: {pelada.pixReceiverName} • Mensalistas: {formatCurrency(pelada.priceMensalista)} | Diaristas: {formatCurrency(pelada.priceDiarista)}</p>
           </div>
         </div>
         <div className="flex items-center gap-2 w-full sm:w-auto">
           <button
             id="btn-copy-pix-banner"
             onClick={handleCopyPixKey}
-            className="flex-1 sm:flex-initial px-3.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold rounded-xl border border-slate-700 flex items-center justify-center gap-1.5 transition-colors"
+            className="flex-1 sm:flex-initial px-3.5 py-1.5 bg-gramado-light hover:bg-giz/15 text-giz/85 text-xs font-bold rounded-xl border border-giz/15 flex items-center justify-center gap-1.5 transition-colors"
           >
-            {copiedKey ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+            {copiedKey ? <Check className="w-3.5 h-3.5 text-capim-light" /> : <Copy className="w-3.5 h-3.5" />}
             {copiedKey ? 'Chave Copiada!' : 'Copiar PIX'}
           </button>
           <button
@@ -409,7 +411,7 @@ export const AttendanceManager: React.FC<AttendanceManagerProps> = ({
 
       {/* Filter Tabs */}
       <div className="flex items-center justify-between gap-2 overflow-x-auto pb-1">
-        <div className="flex items-center gap-1.5 bg-slate-900/80 p-1 rounded-2xl border border-slate-800">
+        <div className="flex items-center gap-1.5 bg-gramado-card/80 p-1 rounded-2xl border border-gramado-light">
           {[
             { id: 'all', label: 'Todos', count: pelada.confirmedPlayers.length },
             { id: 'confirmed', label: 'Confirmados', count: confirmedList.length },
@@ -423,12 +425,12 @@ export const AttendanceManager: React.FC<AttendanceManagerProps> = ({
               onClick={() => setFilter(tab.id as any)}
               className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
                 filter === tab.id
-                  ? 'bg-emerald-600 text-white shadow-md'
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800'
+                  ? 'bg-capim text-giz shadow-md'
+                  : 'text-giz/50 hover:text-giz/85 hover:bg-gramado-light'
               }`}
             >
               <span>{tab.label}</span>
-              <span className={`text-[10px] px-1.5 py-0.2 rounded-full ${filter === tab.id ? 'bg-emerald-800 text-white' : 'bg-slate-800 text-slate-400'}`}>
+              <span className={`text-[10px] px-1.5 py-0.2 rounded-full ${filter === tab.id ? 'bg-gramado-light text-giz' : 'bg-gramado-light text-giz/50'}`}>
                 {tab.count}
               </span>
             </button>
@@ -439,10 +441,10 @@ export const AttendanceManager: React.FC<AttendanceManagerProps> = ({
       {/* Players Attendance Table / Cards */}
       <div className="space-y-2.5">
         {filteredPlayers.length === 0 ? (
-          <div className="text-center py-12 bg-slate-900/40 rounded-3xl border border-slate-800">
-            <Users className="w-10 h-10 text-slate-600 mx-auto mb-2" />
-            <p className="text-slate-300 font-bold">Nenhum jogador encontrado nesta categoria.</p>
-            <p className="text-xs text-slate-500 mt-1">Altere o filtro acima ou convide jogadores pelo WhatsApp.</p>
+          <div className="text-center py-12 bg-gramado-card/40 rounded-3xl border border-gramado-light">
+            <Users className="w-10 h-10 text-giz/25 mx-auto mb-2" />
+            <p className="text-giz/70 font-bold">Nenhum jogador encontrado nesta categoria.</p>
+            <p className="text-xs text-giz/35 mt-1">Altere o filtro acima ou convide jogadores pelo WhatsApp.</p>
           </div>
         ) : (
           filteredPlayers.map((cp, idx) => {
@@ -457,14 +459,14 @@ export const AttendanceManager: React.FC<AttendanceManagerProps> = ({
               <div
                 key={cp.playerId}
                 id={`attendance-row-${cp.playerId}`}
-                className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 bg-slate-900/80 hover:bg-slate-900 border border-slate-800 hover:border-slate-700 rounded-2xl transition-all"
+                className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 bg-gramado-card/80 hover:bg-gramado-card border border-gramado-light hover:border-giz/15 rounded-2xl transition-all"
               >
                 {/* Player identity info */}
                 <div
                   className="flex items-center gap-3 cursor-pointer"
                   onClick={() => onSelectPlayer(player)}
                 >
-                  <span className="text-xs font-extrabold text-slate-500 w-5 text-center">
+                  <span className="text-xs font-extrabold text-giz/35 w-5 text-center">
                     {idx + 1}
                   </span>
                   <div className="relative">
@@ -472,25 +474,25 @@ export const AttendanceManager: React.FC<AttendanceManagerProps> = ({
                       src={player.photoUrl}
                       alt={player.name}
                       referrerPolicy="no-referrer"
-                      className="w-11 h-11 rounded-xl object-cover border border-slate-700"
+                      className="w-11 h-11 rounded-xl object-cover border border-giz/15"
                     />
-                    <span className="absolute -bottom-1 -right-1 text-[9px] font-black px-1 rounded bg-amber-400 text-slate-950">
+                    <span className="absolute -bottom-1 -right-1 text-[9px] font-black px-1 rounded bg-amber-400 text-gramado">
                       {player.overall}
                     </span>
                   </div>
                   <div>
                     <div className="flex items-center gap-2">
-                      <h4 className="text-sm font-bold text-white hover:text-emerald-400 transition-colors">
+                      <h4 className="text-sm font-bold text-giz hover:text-capim-light transition-colors">
                         {player.nickname || player.name}
                       </h4>
-                      <span className="text-[10px] font-extrabold px-1.5 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700">
+                      <span className="text-[10px] font-extrabold px-1.5 py-0.5 rounded bg-gramado-light text-giz/70 border border-giz/15">
                         {player.position}
                       </span>
-                      <span className="text-[10px] font-medium text-slate-400 capitalize">
+                      <span className="text-[10px] font-medium text-giz/50 capitalize">
                         {player.type}
                       </span>
                     </div>
-                    <p className="text-xs text-slate-400">
+                    <p className="text-xs text-giz/50">
                       {player.name} • {player.phone || 'Sem telefone'}
                     </p>
                   </div>
@@ -499,14 +501,14 @@ export const AttendanceManager: React.FC<AttendanceManagerProps> = ({
                 {/* Status Toggles & Payment Status */}
                 <div className="flex flex-wrap items-center gap-2 sm:ml-auto">
                   {/* Presence Status Select Button Group */}
-                  <div className="flex items-center gap-1 bg-slate-950 p-1 rounded-xl border border-slate-800">
+                  <div className="flex items-center gap-1 bg-gramado p-1 rounded-xl border border-gramado-light">
                     <button
                       id={`btn-confirm-${cp.playerId}`}
                       onClick={() => handleStatusChange(cp.playerId, 'confirmed')}
                       className={`px-2.5 py-1 rounded-lg text-xs font-bold flex items-center gap-1 transition-all ${
                         isConfirmed
-                          ? 'bg-emerald-500 text-slate-950 shadow-sm'
-                          : 'text-slate-400 hover:text-emerald-400'
+                          ? 'bg-capim text-gramado shadow-sm'
+                          : 'text-giz/50 hover:text-capim-light'
                       }`}
                       title="Confirmar presença"
                     >
@@ -518,8 +520,8 @@ export const AttendanceManager: React.FC<AttendanceManagerProps> = ({
                       onClick={() => handleStatusChange(cp.playerId, 'waitlist')}
                       className={`px-2.5 py-1 rounded-lg text-xs font-bold flex items-center gap-1 transition-all ${
                         isWaitlist
-                          ? 'bg-amber-500 text-slate-950 shadow-sm'
-                          : 'text-slate-400 hover:text-amber-400'
+                          ? 'bg-amber-500 text-gramado shadow-sm'
+                          : 'text-giz/50 hover:text-amber-400'
                       }`}
                       title="Mover para lista de espera"
                     >
@@ -531,8 +533,8 @@ export const AttendanceManager: React.FC<AttendanceManagerProps> = ({
                       onClick={() => handleStatusChange(cp.playerId, 'declined')}
                       className={`px-2.5 py-1 rounded-lg text-xs font-bold flex items-center gap-1 transition-all ${
                         cp.status === 'declined'
-                          ? 'bg-rose-500 text-white shadow-sm'
-                          : 'text-slate-400 hover:text-rose-400'
+                          ? 'bg-rose-500 text-giz shadow-sm'
+                          : 'text-giz/50 hover:text-rose-400'
                       }`}
                       title="Recusar presença"
                     >
@@ -547,10 +549,10 @@ export const AttendanceManager: React.FC<AttendanceManagerProps> = ({
                       <button
                         id={`btn-pay-status-${cp.playerId}`}
                         onClick={() => handlePaymentStatusChange(cp.playerId, 'pending')}
-                        className="px-2.5 py-1 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-xs font-bold flex items-center gap-1 transition-colors"
+                        className="px-2.5 py-1 rounded-xl bg-capim/10 hover:bg-capim/20 text-capim-light border border-capim/30 text-xs font-bold flex items-center gap-1 transition-colors"
                         title="Clique para desmarcar pagamento"
                       >
-                        <Check className="w-3.5 h-3.5 text-emerald-400" />
+                        <Check className="w-3.5 h-3.5 text-capim-light" />
                         <span>Pago {formatCurrency(cp.paidAmount || (player.type === 'mensalista' ? pelada.priceMensalista : pelada.priceDiarista))}</span>
                       </button>
                     ) : (
@@ -573,7 +575,7 @@ export const AttendanceManager: React.FC<AttendanceManagerProps> = ({
                           const msg = generatePixBillingMessage(pelada, cp, player);
                           openWhatsAppWithText(msg, player.phone);
                         }}
-                        className="p-1.5 bg-slate-800 hover:bg-slate-700 text-emerald-400 rounded-xl border border-slate-700 transition-colors"
+                        className="p-1.5 bg-gramado-light hover:bg-giz/15 text-capim-light rounded-xl border border-giz/15 transition-colors"
                         title="Enviar cobrança individual no WhatsApp"
                       >
                         <Share2 className="w-3.5 h-3.5" />
@@ -595,37 +597,37 @@ export const AttendanceManager: React.FC<AttendanceManagerProps> = ({
           onClick={() => setIsAddGuestModalOpen(false)}
         >
           <div
-            className="w-full max-w-md bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-2xl"
+            className="w-full max-w-md bg-gramado-card border border-gramado-light rounded-3xl p-6 shadow-2xl"
             onClick={(e) => e.stopPropagation()}
           >
-            <h3 className="text-lg font-black text-white mb-1 flex items-center gap-2">
-              <UserPlus className="w-5 h-5 text-emerald-400" />
+            <h3 className="text-lg font-black text-giz mb-1 flex items-center gap-2">
+              <UserPlus className="w-5 h-5 text-capim-light" />
               Adicionar Convidado / Diarista
             </h3>
-            <p className="text-xs text-slate-400 mb-4">
+            <p className="text-xs text-giz/50 mb-4">
               Cadastre um jogador avulso para participar desta pelada.
             </p>
 
             <form onSubmit={handleAddGuest} className="space-y-3.5 text-xs">
               <div>
-                <label className="text-slate-300 font-bold block mb-1">Nome / Apelido</label>
+                <label className="text-giz/70 font-bold block mb-1">Nome / Apelido</label>
                 <input
                   type="text"
                   required
                   value={guestName}
                   onChange={(e) => setGuestName(e.target.value)}
                   placeholder="Ex: Pedrinho do Bairro"
-                  className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-emerald-500"
+                  className="w-full bg-gramado border border-giz/15 rounded-xl px-3 py-2 text-giz focus:outline-none focus:border-capim"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-slate-300 font-bold block mb-1">Posição</label>
+                  <label className="text-giz/70 font-bold block mb-1">Posição</label>
                   <select
                     value={guestPosition}
                     onChange={(e) => setGuestPosition(e.target.value as any)}
-                    className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-emerald-500"
+                    className="w-full bg-gramado border border-giz/15 rounded-xl px-3 py-2 text-giz focus:outline-none focus:border-capim"
                   >
                     <option value="GK">Goleiro (GK)</option>
                     <option value="DEF">Zagueiro (DEF)</option>
@@ -634,40 +636,40 @@ export const AttendanceManager: React.FC<AttendanceManagerProps> = ({
                   </select>
                 </div>
                 <div>
-                  <label className="text-slate-300 font-bold block mb-1">Nível / Overall: {guestOverall}</label>
+                  <label className="text-giz/70 font-bold block mb-1">Nível / Overall: {guestOverall}</label>
                   <input
                     type="range"
                     min="50"
                     max="90"
                     value={guestOverall}
                     onChange={(e) => setGuestOverall(parseInt(e.target.value, 10))}
-                    className="w-full accent-emerald-500 mt-2"
+                    className="w-full accent-capim mt-2"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="text-slate-300 font-bold block mb-1">WhatsApp (Opcional)</label>
+                <label className="text-giz/70 font-bold block mb-1">WhatsApp (Opcional)</label>
                 <input
                   type="text"
                   value={guestPhone}
                   onChange={(e) => setGuestPhone(e.target.value)}
                   placeholder="(11) 99999-9999"
-                  className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-emerald-500"
+                  className="w-full bg-gramado border border-giz/15 rounded-xl px-3 py-2 text-giz focus:outline-none focus:border-capim"
                 />
               </div>
 
-              <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-800">
+              <div className="flex items-center justify-end gap-2 pt-3 border-t border-gramado-light">
                 <button
                   type="button"
                   onClick={() => setIsAddGuestModalOpen(false)}
-                  className="px-4 py-2 bg-slate-800 text-slate-300 rounded-xl font-bold hover:bg-slate-700"
+                  className="px-4 py-2 bg-gramado-light text-giz/70 rounded-xl font-bold hover:bg-giz/15"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold shadow-lg transition-colors"
+                  className="px-5 py-2 bg-capim hover:bg-capim text-giz rounded-xl font-bold shadow-lg transition-colors"
                 >
                   Adicionar à Lista
                 </button>

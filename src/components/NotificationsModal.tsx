@@ -113,23 +113,23 @@ export const NotificationsModal: React.FC<NotificationsModalProps> = ({
     >
       <div
         id="notifications-modal-content"
-        className="w-full max-w-xl bg-slate-900 border border-slate-800 rounded-3xl overflow-hidden shadow-2xl my-8"
+        className="w-full max-w-xl bg-gramado-card border border-gramado-light rounded-3xl overflow-hidden shadow-2xl my-8"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="p-5 bg-gradient-to-r from-slate-900 to-indigo-950 border-b border-slate-800 flex items-center justify-between">
+        <div className="p-5 bg-gradient-to-r from-gramado-card to-gramado-light border-b border-gramado-light flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400">
+            <div className="w-9 h-9 rounded-xl bg-capim/20 border border-capim/40 flex items-center justify-center text-capim-light">
               <Bell className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="text-base font-black text-white">Central de Notificações Automáticas</h3>
-              <p className="text-xs text-slate-400">Dispare avisos, lembretes de presença e cobranças PIX</p>
+              <h3 className="text-base font-black text-giz">Central de Notificações Automáticas</h3>
+              <p className="text-xs text-giz/50">Dispare avisos, lembretes de presença e cobranças PIX</p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-2 rounded-xl bg-slate-800 text-slate-300 hover:bg-slate-700 transition-colors"
+            className="p-2 rounded-xl bg-gramado-light text-giz/70 hover:bg-giz/15 transition-colors"
           >
             <X className="w-4 h-4" />
           </button>
@@ -138,7 +138,7 @@ export const NotificationsModal: React.FC<NotificationsModalProps> = ({
         <div className="p-6 space-y-6">
           {/* Automatic Triggers Grid */}
           <div>
-            <h4 className="text-xs font-black uppercase tracking-wider text-slate-400 mb-3 flex items-center gap-2">
+            <h4 className="text-xs font-black uppercase tracking-wider text-giz/50 mb-3 flex items-center gap-2">
               <Zap className="w-4 h-4 text-amber-400" /> Disparadores Automáticos (WhatsApp & Push)
             </h4>
 
@@ -146,67 +146,67 @@ export const NotificationsModal: React.FC<NotificationsModalProps> = ({
               <button
                 id="btn-auto-convite"
                 onClick={() => handleSimulateAutomatedNotification('convite_24h')}
-                className="p-3.5 bg-slate-950/80 hover:bg-slate-950 border border-slate-800 hover:border-emerald-500/40 rounded-2xl text-left transition-all group"
+                className="p-3.5 bg-gramado/80 hover:bg-gramado border border-gramado-light hover:border-capim/40 rounded-2xl text-left transition-all group"
               >
                 <div className="flex items-center gap-2 mb-1">
                   <span className="text-base">📢</span>
-                  <h5 className="text-xs font-bold text-white group-hover:text-emerald-400">Convocação Oficial</h5>
+                  <h5 className="text-xs font-bold text-giz group-hover:text-capim-light">Convocação Oficial</h5>
                 </div>
-                <p className="text-[11px] text-slate-400">Envia lista de confirmados e lista de espera para o grupo.</p>
+                <p className="text-[11px] text-giz/50">Envia lista de confirmados e lista de espera para o grupo.</p>
               </button>
 
               <button
                 id="btn-auto-lembrete"
                 onClick={() => handleSimulateAutomatedNotification('lembrete_dia')}
-                className="p-3.5 bg-slate-950/80 hover:bg-slate-950 border border-slate-800 hover:border-amber-500/40 rounded-2xl text-left transition-all group"
+                className="p-3.5 bg-gramado/80 hover:bg-gramado border border-gramado-light hover:border-amber-500/40 rounded-2xl text-left transition-all group"
               >
                 <div className="flex items-center gap-2 mb-1">
                   <span className="text-base">⏰</span>
-                  <h5 className="text-xs font-bold text-white group-hover:text-amber-400">Lembrete 24h Antes</h5>
+                  <h5 className="text-xs font-bold text-giz group-hover:text-amber-400">Lembrete 24h Antes</h5>
                 </div>
-                <p className="text-[11px] text-slate-400">Alerta os jogadores pendentes para confirmarem ou liberarem vaga.</p>
+                <p className="text-[11px] text-giz/50">Alerta os jogadores pendentes para confirmarem ou liberarem vaga.</p>
               </button>
 
               <button
                 id="btn-auto-pix"
                 onClick={() => handleSimulateAutomatedNotification('cobranca_pix')}
-                className="p-3.5 bg-slate-950/80 hover:bg-slate-950 border border-slate-800 hover:border-emerald-500/40 rounded-2xl text-left transition-all group"
+                className="p-3.5 bg-gramado/80 hover:bg-gramado border border-gramado-light hover:border-capim/40 rounded-2xl text-left transition-all group"
               >
                 <div className="flex items-center gap-2 mb-1">
                   <span className="text-base">💸</span>
-                  <h5 className="text-xs font-bold text-white group-hover:text-emerald-400">Cobrança PIX em Massa</h5>
+                  <h5 className="text-xs font-bold text-giz group-hover:text-capim-light">Cobrança PIX em Massa</h5>
                 </div>
-                <p className="text-[11px] text-slate-400">Envia a chave PIX e valores para atletas com pagamento pendente.</p>
+                <p className="text-[11px] text-giz/50">Envia a chave PIX e valores para atletas com pagamento pendente.</p>
               </button>
 
               <button
                 id="btn-auto-posjogo"
                 onClick={() => handleSimulateAutomatedNotification('pos_jogo_votacao')}
-                className="p-3.5 bg-slate-950/80 hover:bg-slate-950 border border-slate-800 hover:border-indigo-500/40 rounded-2xl text-left transition-all group"
+                className="p-3.5 bg-gramado/80 hover:bg-gramado border border-gramado-light hover:border-barro/40 rounded-2xl text-left transition-all group"
               >
                 <div className="flex items-center gap-2 mb-1">
                   <span className="text-base">⭐</span>
-                  <h5 className="text-xs font-bold text-white group-hover:text-indigo-400">Votação Pós-Jogo</h5>
+                  <h5 className="text-xs font-bold text-giz group-hover:text-barro">Votação Pós-Jogo</h5>
                 </div>
-                <p className="text-[11px] text-slate-400">Avisa a galera para avaliar as notas individuais de Craque e Bagre.</p>
+                <p className="text-[11px] text-giz/50">Avisa a galera para avaliar as notas individuais de Craque e Bagre.</p>
               </button>
             </div>
           </div>
 
           {/* Custom Announcement Form */}
           <form onSubmit={handleSendCustomMessage} className="space-y-2">
-            <label className="text-xs font-bold text-slate-300 block">Enviar Comunicado Personalizado:</label>
+            <label className="text-xs font-bold text-giz/70 block">Enviar Comunicado Personalizado:</label>
             <div className="flex gap-2">
               <input
                 type="text"
                 value={customMsg}
                 onChange={(e) => setCustomMsg(e.target.value)}
                 placeholder="Ex: Pessoal, hoje a pelada começa 15min mais cedo..."
-                className="flex-1 bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-emerald-500"
+                className="flex-1 bg-gramado border border-giz/15 rounded-xl px-3 py-2 text-xs text-giz focus:outline-none focus:border-capim"
               />
               <button
                 type="submit"
-                className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 transition-colors"
+                className="px-4 py-2 bg-capim hover:bg-capim text-giz rounded-xl text-xs font-bold flex items-center gap-1.5 transition-colors"
               >
                 <Send className="w-3.5 h-3.5" /> Enviar
               </button>
@@ -215,27 +215,27 @@ export const NotificationsModal: React.FC<NotificationsModalProps> = ({
 
           {/* History Log */}
           <div>
-            <h4 className="text-xs font-black uppercase tracking-wider text-slate-400 mb-3 flex items-center gap-2">
-              <Clock className="w-4 h-4 text-emerald-400" /> Histórico de Envios
+            <h4 className="text-xs font-black uppercase tracking-wider text-giz/50 mb-3 flex items-center gap-2">
+              <Clock className="w-4 h-4 text-capim-light" /> Histórico de Envios
             </h4>
 
             <div className="space-y-2 max-h-48 overflow-y-auto pr-1">
               {notifications.length === 0 ? (
-                <p className="text-xs text-slate-500 text-center py-4">Nenhuma notificação enviada ainda.</p>
+                <p className="text-xs text-giz/35 text-center py-4">Nenhuma notificação enviada ainda.</p>
               ) : (
                 notifications.map((n) => (
                   <div
                     key={n.id}
-                    className="p-3 bg-slate-950/80 border border-slate-800 rounded-xl flex items-start justify-between gap-3 text-xs"
+                    className="p-3 bg-gramado/80 border border-gramado-light rounded-xl flex items-start justify-between gap-3 text-xs"
                   >
                     <div>
-                      <h5 className="font-bold text-white flex items-center gap-1.5">
-                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                      <h5 className="font-bold text-giz flex items-center gap-1.5">
+                        <CheckCircle2 className="w-3.5 h-3.5 text-capim-light" />
                         {n.title}
                       </h5>
-                      <p className="text-[11px] text-slate-400 mt-0.5 line-clamp-1">{n.message}</p>
+                      <p className="text-[11px] text-giz/50 mt-0.5 line-clamp-1">{n.message}</p>
                     </div>
-                    <span className="text-[10px] text-slate-500 whitespace-nowrap">
+                    <span className="text-[10px] text-giz/35 whitespace-nowrap">
                       {new Date(n.sentAt).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
                     </span>
                   </div>

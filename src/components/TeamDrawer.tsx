@@ -36,12 +36,12 @@ export const TeamDrawer: React.FC<TeamDrawerProps> = ({
 
   if (!pelada) {
     return (
-      <div className="rounded-3xl bg-slate-900 border border-slate-800 p-8 sm:p-12 text-center max-w-xl mx-auto my-8 shadow-2xl">
-        <Shuffle className="w-16 h-16 text-emerald-400 mx-auto mb-4" />
-        <h2 className="text-2xl font-black text-white font-['Teko',sans-serif] uppercase tracking-wider text-3xl">
+      <div className="rounded-3xl bg-gramado-card border border-gramado-light p-8 sm:p-12 text-center max-w-xl mx-auto my-8 shadow-2xl">
+        <Shuffle className="w-16 h-16 text-capim-light mx-auto mb-4" />
+        <h2 className="text-2xl font-black text-giz font-['Teko',sans-serif] uppercase tracking-wider text-3xl">
           Nenhuma Pelada Ativa para Sorteio
         </h2>
-        <p className="text-xs sm:text-sm text-slate-300 mt-2 mb-4">
+        <p className="text-xs sm:text-sm text-giz/70 mt-2 mb-4">
           Crie ou selecione uma pelada para realizar o sorteio balanceado de times.
         </p>
       </div>
@@ -145,30 +145,30 @@ export const TeamDrawer: React.FC<TeamDrawerProps> = ({
   return (
     <div className="space-y-6">
       {/* Header & Draw Control Panel */}
-      <div className="bg-gradient-to-r from-slate-900 via-slate-900/95 to-slate-950 p-5 rounded-3xl border border-slate-800 shadow-xl">
+      <div className="bg-gradient-to-r from-gramado-card via-gramado-card/95 to-gramado p-5 rounded-3xl border border-gramado-light shadow-xl">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
           <div>
             <div className="flex items-center gap-2 mb-1">
-              <span className="text-xs font-black uppercase tracking-wider text-emerald-400 bg-emerald-500/10 px-2.5 py-0.5 rounded-full border border-emerald-500/30">
+              <span className="text-xs font-black uppercase tracking-wider text-capim-light bg-capim/10 px-2.5 py-0.5 rounded-full border border-capim/30">
                 Sorteio Inteligente
               </span>
-              <span className="text-xs text-slate-400">
+              <span className="text-xs text-giz/50">
                 Balanceamento automático por Overall e Posição
               </span>
             </div>
-            <h2 className="text-xl sm:text-2xl font-black text-white flex items-center gap-2">
-              <Shuffle className="w-6 h-6 text-emerald-400" />
+            <h2 className="text-xl sm:text-2xl font-black text-giz flex items-center gap-2">
+              <Shuffle className="w-6 h-6 text-capim-light" />
               <span>Gerador de Times Equilibrados</span>
             </h2>
-            <p className="text-xs text-slate-400 mt-1">
+            <p className="text-xs text-giz/50 mt-1">
               {confirmedPlayers.length} jogadores disponíveis para sorteio ({confirmedPlayers.filter(p => p.position === 'GK').length} goleiros)
             </p>
           </div>
 
           {/* Controls: Team Count selector + Sorteio Button */}
           <div className="flex flex-wrap items-center gap-3">
-            <div className="flex items-center gap-1.5 bg-slate-950 p-1 rounded-2xl border border-slate-800">
-              <span className="text-xs font-bold text-slate-400 px-2">Qtd. de Times:</span>
+            <div className="flex items-center gap-1.5 bg-gramado p-1 rounded-2xl border border-gramado-light">
+              <span className="text-xs font-bold text-giz/50 px-2">Qtd. de Times:</span>
               {[2, 3, 4].map((count) => (
                 <button
                   key={count}
@@ -176,8 +176,8 @@ export const TeamDrawer: React.FC<TeamDrawerProps> = ({
                   onClick={() => setTeamsCount(count)}
                   className={`px-3 py-1.5 rounded-xl text-xs font-black transition-all ${
                     teamsCount === count
-                      ? 'bg-emerald-600 text-white shadow-md'
-                      : 'text-slate-400 hover:text-white hover:bg-slate-800'
+                      ? 'bg-capim text-giz shadow-md'
+                      : 'text-giz/50 hover:text-giz hover:bg-gramado-light'
                   }`}
                 >
                   {count} Times
@@ -189,7 +189,7 @@ export const TeamDrawer: React.FC<TeamDrawerProps> = ({
               id="btn-sortear-times"
               disabled={isDrawing || confirmedPlayers.length === 0}
               onClick={handlePerformDraw}
-              className="px-5 py-2.5 bg-gradient-to-r from-emerald-600 to-teal-500 hover:from-emerald-500 hover:to-teal-400 text-white rounded-2xl text-xs font-black flex items-center gap-2 shadow-lg shadow-emerald-600/30 transition-all active:scale-95 disabled:opacity-50"
+              className="px-5 py-2.5 bg-gradient-to-r from-capim to-barro hover:from-capim hover:to-barro text-giz rounded-2xl text-xs font-black flex items-center gap-2 shadow-lg shadow-capim/30 transition-all active:scale-95 disabled:opacity-50"
             >
               <Sparkles className={`w-4 h-4 ${isDrawing ? 'animate-spin' : ''}`} />
               {isDrawing ? 'Sorteando e Equilibrando...' : 'Sortear Times Agora'}
@@ -199,10 +199,10 @@ export const TeamDrawer: React.FC<TeamDrawerProps> = ({
               <button
                 id="btn-share-teams-whatsapp"
                 onClick={handleShareWhatsApp}
-                className="px-3.5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-2xl text-xs font-bold flex items-center gap-1.5 transition-colors"
+                className="px-3.5 py-2.5 bg-gramado-light hover:bg-giz/15 text-giz/85 border border-giz/15 rounded-2xl text-xs font-bold flex items-center gap-1.5 transition-colors"
                 title="Compartilhar escalações no WhatsApp"
               >
-                <Share2 className="w-4 h-4 text-emerald-400" />
+                <Share2 className="w-4 h-4 text-capim-light" />
                 WhatsApp
               </button>
             )}
@@ -221,7 +221,7 @@ export const TeamDrawer: React.FC<TeamDrawerProps> = ({
           </div>
           <button
             onClick={() => setSelectedPlayerToMove(null)}
-            className="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg text-xs font-bold"
+            className="px-2.5 py-1 bg-gramado-light hover:bg-giz/15 text-giz/85 rounded-lg text-xs font-bold"
           >
             Cancelar
           </button>
@@ -230,10 +230,10 @@ export const TeamDrawer: React.FC<TeamDrawerProps> = ({
 
       {/* Teams Grid */}
       {pelada.teams.length === 0 ? (
-        <div className="text-center py-16 bg-slate-900/40 rounded-3xl border border-slate-800">
-          <Shuffle className="w-12 h-12 text-slate-600 mx-auto mb-3" />
-          <h3 className="text-base font-black text-white">Nenhum time sorteado ainda</h3>
-          <p className="text-xs text-slate-400 mt-1 max-w-md mx-auto">
+        <div className="text-center py-16 bg-gramado-card/40 rounded-3xl border border-gramado-light">
+          <Shuffle className="w-12 h-12 text-giz/25 mx-auto mb-3" />
+          <h3 className="text-base font-black text-giz">Nenhum time sorteado ainda</h3>
+          <p className="text-xs text-giz/50 mt-1 max-w-md mx-auto">
             Clique no botão acima para sortear os times de forma equilibrada com base no nível técnico (Overall) e posições de cada atleta.
           </p>
         </div>
@@ -247,8 +247,8 @@ export const TeamDrawer: React.FC<TeamDrawerProps> = ({
               <div
                 key={team.id}
                 id={`team-box-${team.id}`}
-                className={`bg-slate-900/90 rounded-3xl border ${
-                  isTarget ? 'border-amber-500/60 ring-2 ring-amber-500/20' : 'border-slate-800'
+                className={`bg-gramado-card/90 rounded-3xl border ${
+                  isTarget ? 'border-amber-500/60 ring-2 ring-amber-500/20' : 'border-gramado-light'
                 } p-5 shadow-xl transition-all flex flex-col justify-between relative overflow-hidden`}
               >
                 {/* Top header with team color badge and Overall average */}
@@ -259,25 +259,25 @@ export const TeamDrawer: React.FC<TeamDrawerProps> = ({
                         className="w-4 h-4 rounded-full border border-white/20 shadow-sm"
                         style={{ backgroundColor: team.colorHex }}
                       />
-                      <h3 className="text-base font-black text-white">{team.name}</h3>
+                      <h3 className="text-base font-black text-giz">{team.name}</h3>
                     </div>
 
-                    <div className="flex items-center gap-1 bg-slate-950 px-2.5 py-1 rounded-xl border border-slate-800">
-                      <span className="text-[10px] text-slate-400 font-bold uppercase">OVR:</span>
+                    <div className="flex items-center gap-1 bg-gramado px-2.5 py-1 rounded-xl border border-gramado-light">
+                      <span className="text-[10px] text-giz/50 font-bold uppercase">OVR:</span>
                       <span className="text-xs font-black text-amber-400">{stats.avgOv}</span>
                     </div>
                   </div>
 
                   {/* Positional distribution badges */}
-                  <div className="flex items-center gap-1.5 text-[10px] font-bold text-slate-400 mb-4 bg-slate-950/60 p-2 rounded-xl border border-slate-800/80">
+                  <div className="flex items-center gap-1.5 text-[10px] font-bold text-giz/50 mb-4 bg-gramado/60 p-2 rounded-xl border border-gramado-light/80">
                     <span className="text-amber-400">🧤 {stats.gks} GK</span>
                     <span>•</span>
                     <span className="text-blue-400">🛡️ {stats.defs} DEF</span>
                     <span>•</span>
-                    <span className="text-emerald-400">🎯 {stats.mids} MEI</span>
+                    <span className="text-capim-light">🎯 {stats.mids} MEI</span>
                     <span>•</span>
                     <span className="text-rose-400">⚡ {stats.atts} ATA</span>
-                    <span className="ml-auto text-slate-300 font-extrabold">{stats.players.length} atletas</span>
+                    <span className="ml-auto text-giz/70 font-extrabold">{stats.players.length} atletas</span>
                   </div>
 
                   {/* Players list inside this team */}
@@ -291,7 +291,7 @@ export const TeamDrawer: React.FC<TeamDrawerProps> = ({
                           className={`flex items-center justify-between p-2 rounded-xl border transition-all ${
                             isSelected
                               ? 'bg-amber-500/20 border-amber-500/50 text-amber-200'
-                              : 'bg-slate-950/70 hover:bg-slate-950 border-slate-800 text-slate-200'
+                              : 'bg-gramado/70 hover:bg-gramado border-gramado-light text-giz/85'
                           }`}
                         >
                           <div
@@ -302,11 +302,11 @@ export const TeamDrawer: React.FC<TeamDrawerProps> = ({
                               src={p.photoUrl}
                               alt={p.name}
                               referrerPolicy="no-referrer"
-                              className="w-8 h-8 rounded-lg object-cover border border-slate-700"
+                              className="w-8 h-8 rounded-lg object-cover border border-giz/15"
                             />
                             <div className="truncate">
-                              <p className="text-xs font-bold text-white truncate">{p.nickname || p.name}</p>
-                              <p className="text-[10px] text-slate-400">
+                              <p className="text-xs font-bold text-giz truncate">{p.nickname || p.name}</p>
+                              <p className="text-[10px] text-giz/50">
                                 {p.position} • Pé {p.dominantFoot === 'canhoto' ? 'Esq' : 'Dir'}
                               </p>
                             </div>
@@ -325,8 +325,8 @@ export const TeamDrawer: React.FC<TeamDrawerProps> = ({
                               }
                               className={`p-1 rounded-lg text-[10px] font-bold border transition-colors ${
                                 isSelected
-                                  ? 'bg-amber-500 text-slate-950 border-amber-400'
-                                  : 'bg-slate-800 text-slate-400 hover:text-slate-200 border-slate-700'
+                                  ? 'bg-amber-500 text-gramado border-amber-400'
+                                  : 'bg-gramado-light text-giz/50 hover:text-giz/85 border-giz/15'
                               }`}
                               title="Trocar de time"
                             >
@@ -344,7 +344,7 @@ export const TeamDrawer: React.FC<TeamDrawerProps> = ({
                   <button
                     id={`btn-transfer-to-${team.id}`}
                     onClick={() => handleTransferPlayer(team.id)}
-                    className="w-full py-2 bg-amber-500 hover:bg-amber-400 text-slate-950 rounded-xl text-xs font-black flex items-center justify-center gap-1.5 shadow-md transition-colors mt-2"
+                    className="w-full py-2 bg-amber-500 hover:bg-amber-400 text-gramado rounded-xl text-xs font-black flex items-center justify-center gap-1.5 shadow-md transition-colors mt-2"
                   >
                     <Plus className="w-4 h-4" /> Transferir para {team.name}
                   </button>

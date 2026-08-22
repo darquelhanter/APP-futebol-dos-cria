@@ -111,27 +111,27 @@ export const PrivilegesModal: React.FC<PrivilegesModalProps> = ({
     >
       <div
         id="privileges-modal-content"
-        className="w-full max-w-xl bg-slate-900 border border-slate-800 rounded-3xl overflow-hidden shadow-2xl my-8"
+        className="w-full max-w-xl bg-gramado-card border border-gramado-light rounded-3xl overflow-hidden shadow-2xl my-8"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="p-5 sm:p-6 bg-gradient-to-r from-slate-950 via-slate-900 to-emerald-950/40 border-b border-slate-800 flex items-center justify-between">
+        <div className="p-5 sm:p-6 bg-gradient-to-r from-gramado via-gramado-card to-gramado-card/40 border-b border-gramado-light flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
+            <div className="w-10 h-10 rounded-2xl bg-capim/20 border border-capim/30 flex items-center justify-center text-capim-light">
               <ShieldCheck className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="text-lg font-black text-white font-['Teko',sans-serif] uppercase tracking-wider text-2xl leading-none">
+              <h3 className="text-lg font-black text-giz font-['Teko',sans-serif] uppercase tracking-wider text-2xl leading-none">
                 Controle de Privilégios & Acessos
               </h3>
-              <p className="text-xs text-slate-400">
+              <p className="text-xs text-giz/50">
                 Defina quem pode gerenciar a pelada além do criador
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 transition-colors"
+            className="p-2 rounded-xl bg-gramado-light hover:bg-giz/15 text-giz/70 transition-colors"
           >
             <X className="w-4 h-4" />
           </button>
@@ -139,7 +139,7 @@ export const PrivilegesModal: React.FC<PrivilegesModalProps> = ({
 
         <div className="p-5 sm:p-6 space-y-6">
           {/* Creator Information Banner */}
-          <div className="p-4 rounded-2xl bg-gradient-to-br from-amber-500/10 via-slate-950 to-slate-900 border border-amber-500/30">
+          <div className="p-4 rounded-2xl bg-gradient-to-br from-amber-500/10 via-gramado to-gramado-card border border-amber-500/30">
             <div className="flex items-start justify-between gap-3">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-400 shrink-0">
@@ -154,35 +154,35 @@ export const PrivilegesModal: React.FC<PrivilegesModalProps> = ({
                       Master
                     </span>
                   </div>
-                  <h4 className="text-sm font-bold text-white mt-0.5">
+                  <h4 className="text-sm font-bold text-giz mt-0.5">
                     {creatorName}
                   </h4>
-                  <p className="text-xs text-slate-400 flex items-center gap-1.5 mt-0.5">
-                    <Mail className="w-3.5 h-3.5 text-slate-500" />
+                  <p className="text-xs text-giz/50 flex items-center gap-1.5 mt-0.5">
+                    <Mail className="w-3.5 h-3.5 text-giz/35" />
                     {creatorEmail}
                   </p>
                 </div>
               </div>
 
               {isCreator && (
-                <span className="px-2.5 py-1 rounded-xl bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 text-[10px] font-black uppercase flex items-center gap-1 shrink-0">
+                <span className="px-2.5 py-1 rounded-xl bg-capim/20 border border-capim/40 text-capim-light text-[10px] font-black uppercase flex items-center gap-1 shrink-0">
                   <CheckCircle2 className="w-3 h-3" /> Você é o Criador
                 </span>
               )}
             </div>
 
             {/* Rules explanation box */}
-            <div className="mt-4 pt-3 border-t border-slate-800 text-[11px] text-slate-300 space-y-1.5">
+            <div className="mt-4 pt-3 border-t border-gramado-light text-[11px] text-giz/70 space-y-1.5">
               <div className="flex items-center gap-1.5 text-amber-300 font-bold">
                 <Lock className="w-3.5 h-3.5" /> Poderes Exclusivos do Criador:
               </div>
-              <p className="text-slate-400 pl-5">
+              <p className="text-giz/50 pl-5">
                 • Excluir a pelada ou excluir atletas do grupo.
               </p>
-              <p className="text-slate-400 pl-5">
+              <p className="text-giz/50 pl-5">
                 • Conceder ou revogar privilégios para outros membros.
               </p>
-              <p className="text-slate-400 pl-5">
+              <p className="text-giz/50 pl-5">
                 • Limpar ou resetar o banco de dados.
               </p>
             </div>
@@ -190,10 +190,10 @@ export const PrivilegesModal: React.FC<PrivilegesModalProps> = ({
 
           {/* If current user is NOT the creator */}
           {!isCreator && (
-            <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800 flex items-start gap-3 text-xs text-slate-300">
+            <div className="p-4 rounded-2xl bg-gramado border border-gramado-light flex items-start gap-3 text-xs text-giz/70">
               <ShieldAlert className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
               <div>
-                <span className="font-bold text-white block mb-0.5">
+                <span className="font-bold text-giz block mb-0.5">
                   Acesso Restrito ao Criador
                 </span>
                 Apenas o criador ({creatorEmail}) tem permissão para cadastrar ou excluir informações críticas e escolher quem recebe privilégios de administrador.
@@ -205,29 +205,29 @@ export const PrivilegesModal: React.FC<PrivilegesModalProps> = ({
           {isCreator && (
             <div className="space-y-3">
               <div className="flex items-center justify-between">
-                <label className="text-xs font-black uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
-                  <UserPlus className="w-4 h-4 text-emerald-400" />
+                <label className="text-xs font-black uppercase tracking-wider text-giz/70 flex items-center gap-1.5">
+                  <UserPlus className="w-4 h-4 text-capim-light" />
                   Conceder Privilégios a Outro Membro
                 </label>
-                <span className="text-[10px] text-slate-400">
+                <span className="text-[10px] text-giz/50">
                   (Permite gerenciar presenças, sorteio e placar)
                 </span>
               </div>
 
               <form onSubmit={handleAddAdminEmail} className="flex gap-2">
                 <div className="relative flex-1">
-                  <Mail className="w-4 h-4 text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                  <Mail className="w-4 h-4 text-giz/35 absolute left-3.5 top-1/2 -translate-y-1/2" />
                   <input
                     type="email"
                     value={newAdminEmail}
                     onChange={(e) => setNewAdminEmail(e.target.value)}
                     placeholder="email.google@gmail.com do atleta"
-                    className="w-full bg-slate-950 border border-slate-700 rounded-xl pl-9 pr-3 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500"
+                    className="w-full bg-gramado border border-giz/15 rounded-xl pl-9 pr-3 py-2.5 text-xs text-giz placeholder-giz/35 focus:outline-none focus:border-capim"
                   />
                 </div>
                 <button
                   type="submit"
-                  className="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-black flex items-center gap-1.5 transition-all shadow-md shadow-emerald-600/20 active:scale-95 shrink-0"
+                  className="px-4 py-2.5 bg-capim hover:bg-capim text-giz rounded-xl text-xs font-black flex items-center gap-1.5 transition-all shadow-md shadow-capim/20 active:scale-95 shrink-0"
                 >
                   <ShieldCheck className="w-4 h-4" />
                   <span>Dar Privilégio</span>
@@ -242,7 +242,7 @@ export const PrivilegesModal: React.FC<PrivilegesModalProps> = ({
               )}
 
               {successMessage && (
-                <div className="text-xs font-bold text-emerald-400 flex items-center gap-1.5 bg-emerald-500/10 border border-emerald-500/20 p-2.5 rounded-xl animate-fade-in">
+                <div className="text-xs font-bold text-capim-light flex items-center gap-1.5 bg-capim/10 border border-capim/20 p-2.5 rounded-xl animate-fade-in">
                   <CheckCircle2 className="w-4 h-4 shrink-0" />
                   {successMessage}
                 </div>
@@ -252,12 +252,12 @@ export const PrivilegesModal: React.FC<PrivilegesModalProps> = ({
 
           {/* List of Current Admins */}
           <div className="space-y-3">
-            <h4 className="text-xs font-black uppercase tracking-wider text-slate-400 flex items-center justify-between">
+            <h4 className="text-xs font-black uppercase tracking-wider text-giz/50 flex items-center justify-between">
               <span>Administradores com Privilégios ({adminEmails.length})</span>
             </h4>
 
             {adminEmails.length === 0 ? (
-              <div className="p-4 rounded-2xl bg-slate-950/60 border border-slate-800/80 text-center text-xs text-slate-500">
+              <div className="p-4 rounded-2xl bg-gramado/60 border border-gramado-light/80 text-center text-xs text-giz/35">
                 Nenhum administrador adicional configurado. Apenas o criador principal possui privilégios de gestão.
               </div>
             ) : (
@@ -265,22 +265,22 @@ export const PrivilegesModal: React.FC<PrivilegesModalProps> = ({
                 {adminEmails.map((email) => (
                   <div
                     key={email}
-                    className="flex items-center justify-between p-3 rounded-xl bg-slate-950 border border-slate-800 text-xs"
+                    className="flex items-center justify-between p-3 rounded-xl bg-gramado border border-gramado-light text-xs"
                   >
                     <div className="flex items-center gap-2.5 min-w-0">
-                      <div className="w-7 h-7 rounded-lg bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shrink-0">
+                      <div className="w-7 h-7 rounded-lg bg-capim/20 border border-capim/30 flex items-center justify-center text-capim-light shrink-0">
                         <ShieldCheck className="w-3.5 h-3.5" />
                       </div>
                       <div className="truncate">
-                        <div className="font-bold text-white truncate">{email}</div>
-                        <div className="text-[10px] text-emerald-400">Admin Autorizado</div>
+                        <div className="font-bold text-giz truncate">{email}</div>
+                        <div className="text-[10px] text-capim-light">Admin Autorizado</div>
                       </div>
                     </div>
 
                     {isCreator && (
                       <button
                         onClick={() => handleRemoveAdminEmail(email)}
-                        className="p-1.5 rounded-lg bg-slate-900 hover:bg-rose-500/20 text-slate-400 hover:text-rose-400 border border-slate-800 transition-colors ml-2 shrink-0"
+                        className="p-1.5 rounded-lg bg-gramado-card hover:bg-rose-500/20 text-giz/50 hover:text-rose-400 border border-gramado-light transition-colors ml-2 shrink-0"
                         title="Remover privilégios deste usuário"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
@@ -294,10 +294,10 @@ export const PrivilegesModal: React.FC<PrivilegesModalProps> = ({
         </div>
 
         {/* Footer */}
-        <div className="p-4 bg-slate-950 border-t border-slate-800 flex justify-end">
+        <div className="p-4 bg-gramado border-t border-gramado-light flex justify-end">
           <button
             onClick={onClose}
-            className="px-5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold transition-all"
+            className="px-5 py-2 rounded-xl bg-gramado-light hover:bg-giz/15 text-giz text-xs font-bold transition-all"
           >
             Fechar
           </button>

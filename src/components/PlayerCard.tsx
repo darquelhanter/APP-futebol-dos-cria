@@ -22,11 +22,11 @@ export const PlayerCard: React.FC<PlayerCardProps> = ({
       case 'DEF':
         return 'bg-blue-500/20 text-blue-300 border-blue-500/40';
       case 'MID':
-        return 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40';
+        return 'bg-capim/20 text-capim-light border-capim/40';
       case 'ATT':
         return 'bg-rose-500/20 text-rose-300 border-rose-500/40';
       default:
-        return 'bg-slate-500/20 text-slate-300 border-slate-500/40';
+        return 'bg-giz/20 text-giz/70 border-giz/40';
     }
   };
 
@@ -47,9 +47,9 @@ export const PlayerCard: React.FC<PlayerCardProps> = ({
 
   const getOverallTier = (ovr: number) => {
     if (ovr >= 85) return 'from-amber-400 via-yellow-500 to-amber-600 border-yellow-400/50 shadow-yellow-500/20 text-yellow-950';
-    if (ovr >= 78) return 'from-emerald-400 via-teal-500 to-emerald-600 border-emerald-400/50 shadow-emerald-500/20 text-emerald-950';
-    if (ovr >= 70) return 'from-sky-400 via-blue-500 to-indigo-600 border-sky-400/50 shadow-sky-500/20 text-sky-950';
-    return 'from-slate-400 via-slate-500 to-slate-600 border-slate-400/50 shadow-slate-500/20 text-slate-950';
+    if (ovr >= 78) return 'from-capim-light via-capim to-capim-light border-capim-light/50 shadow-capim/20 text-gramado-card';
+    if (ovr >= 70) return 'from-sky-400 via-blue-500 to-blue-600 border-sky-400/50 shadow-sky-500/20 text-sky-950';
+    return 'from-giz/50 via-giz/35 to-giz/25 border-giz/50 shadow-giz/20 text-gramado';
   };
 
   if (size === 'sm') {
@@ -57,14 +57,14 @@ export const PlayerCard: React.FC<PlayerCardProps> = ({
       <div
         id={`player-card-sm-${player.id}`}
         onClick={onClick}
-        className={`flex items-center gap-3 p-2.5 rounded-xl bg-slate-900/90 border border-slate-800 hover:border-emerald-500/50 transition-all cursor-pointer group`}
+        className={`flex items-center gap-3 p-2.5 rounded-xl bg-gramado-card/90 border border-gramado-light hover:border-capim/50 transition-all cursor-pointer group`}
       >
         <div className="relative">
           <img
             src={player.photoUrl}
             alt={player.name}
             referrerPolicy="no-referrer"
-            className="w-10 h-10 rounded-full object-cover border-2 border-slate-700 group-hover:border-emerald-400 transition-colors"
+            className="w-10 h-10 rounded-full object-cover border-2 border-giz/15 group-hover:border-capim-light transition-colors"
           />
           <span
             className={`absolute -bottom-1 -right-1 text-[10px] font-black px-1 rounded-md bg-gradient-to-r ${getOverallTier(
@@ -76,7 +76,7 @@ export const PlayerCard: React.FC<PlayerCardProps> = ({
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-1.5">
-            <p className="text-sm font-bold text-slate-100 truncate">{player.nickname || player.name}</p>
+            <p className="text-sm font-bold text-giz truncate">{player.nickname || player.name}</p>
             <span
               className={`text-[10px] font-bold px-1.5 py-0.5 rounded border ${getPositionColor(
                 player.position
@@ -85,7 +85,7 @@ export const PlayerCard: React.FC<PlayerCardProps> = ({
               {player.position}
             </span>
           </div>
-          <p className="text-xs text-slate-400 truncate">
+          <p className="text-xs text-giz/50 truncate">
             {player.goals} ⚽ | {player.assists} 🎯 | ⭐ {player.averageRating.toFixed(1)}
           </p>
         </div>
@@ -100,10 +100,10 @@ export const PlayerCard: React.FC<PlayerCardProps> = ({
       className={`relative group cursor-pointer transition-all duration-300 hover:-translate-y-1`}
     >
       {/* FIFA FUT Style Card Wrapper */}
-      <div className="relative w-full rounded-2xl overflow-hidden bg-gradient-to-b from-slate-900 via-slate-900/95 to-slate-950 border border-slate-800 group-hover:border-emerald-500/50 shadow-xl group-hover:shadow-emerald-500/10 p-4">
+      <div className="relative w-full rounded-2xl overflow-hidden bg-gradient-to-b from-gramado-card via-gramado-card/95 to-gramado border border-gramado-light group-hover:border-capim/50 shadow-xl group-hover:shadow-capim/10 p-4">
         
         {/* Glow effect */}
-        <div className="absolute -top-12 -right-12 w-28 h-28 bg-emerald-500/10 rounded-full blur-2xl group-hover:bg-emerald-500/20 transition-all pointer-events-none" />
+        <div className="absolute -top-12 -right-12 w-28 h-28 bg-capim/10 rounded-full blur-2xl group-hover:bg-capim/20 transition-all pointer-events-none" />
         
         {/* Card Header: Overall + Position + Avatar */}
         <div className="flex items-start justify-between mb-3">
@@ -122,13 +122,13 @@ export const PlayerCard: React.FC<PlayerCardProps> = ({
             >
               {player.position}
             </span>
-            <span className="text-[10px] font-semibold text-slate-400 mt-0.5">
+            <span className="text-[10px] font-semibold text-giz/50 mt-0.5">
               {player.dominantFoot === 'canhoto' ? 'Canhota' : player.dominantFoot === 'ambidestro' ? 'Ambi' : 'Destro'}
             </span>
           </div>
 
           <div className="relative">
-            <div className="w-20 h-20 rounded-2xl overflow-hidden border-2 border-slate-700/80 group-hover:border-emerald-400/80 shadow-md transition-all">
+            <div className="w-20 h-20 rounded-2xl overflow-hidden border-2 border-giz/80 group-hover:border-capim-light/80 shadow-md transition-all">
               <img
                 src={player.photoUrl}
                 alt={player.name}
@@ -137,7 +137,7 @@ export const PlayerCard: React.FC<PlayerCardProps> = ({
               />
             </div>
             {player.mvpCount > 3 && (
-              <span className="absolute -top-2 -right-2 bg-amber-500 text-slate-950 text-[10px] font-black px-1.5 py-0.5 rounded-full flex items-center gap-0.5 shadow-md border border-amber-300">
+              <span className="absolute -top-2 -right-2 bg-amber-500 text-gramado text-[10px] font-black px-1.5 py-0.5 rounded-full flex items-center gap-0.5 shadow-md border border-amber-300">
                 <Sparkles className="w-2.5 h-2.5" /> MVP
               </span>
             )}
@@ -146,49 +146,49 @@ export const PlayerCard: React.FC<PlayerCardProps> = ({
 
         {/* Player Name and Role */}
         <div className="text-center mb-3">
-          <h3 className="text-base font-extrabold text-white tracking-wide truncate group-hover:text-emerald-400 transition-colors">
+          <h3 className="text-base font-extrabold text-giz tracking-wide truncate group-hover:text-capim-light transition-colors">
             {player.nickname || player.name}
           </h3>
-          <p className="text-xs text-slate-400 truncate">
+          <p className="text-xs text-giz/50 truncate">
             {player.name} • <span className="capitalize">{player.type}</span>
           </p>
         </div>
 
         {/* Attributes Grid (FIFA Stats) */}
-        <div className="grid grid-cols-3 gap-1.5 bg-slate-950/80 rounded-xl p-2.5 border border-slate-800/80 text-[11px] mb-3">
+        <div className="grid grid-cols-3 gap-1.5 bg-gramado/80 rounded-xl p-2.5 border border-gramado-light/80 text-[11px] mb-3">
           <div className="flex justify-between px-1">
-            <span className="text-slate-400 font-bold">PAC</span>
-            <span className="font-extrabold text-slate-100">{player.pace}</span>
+            <span className="text-giz/50 font-bold">PAC</span>
+            <span className="font-extrabold text-giz">{player.pace}</span>
           </div>
           <div className="flex justify-between px-1">
-            <span className="text-slate-400 font-bold">FIN</span>
-            <span className="font-extrabold text-slate-100">{player.shoot}</span>
+            <span className="text-giz/50 font-bold">FIN</span>
+            <span className="font-extrabold text-giz">{player.shoot}</span>
           </div>
           <div className="flex justify-between px-1">
-            <span className="text-slate-400 font-bold">PAS</span>
-            <span className="font-extrabold text-slate-100">{player.pass}</span>
+            <span className="text-giz/50 font-bold">PAS</span>
+            <span className="font-extrabold text-giz">{player.pass}</span>
           </div>
           <div className="flex justify-between px-1">
-            <span className="text-slate-400 font-bold">DRI</span>
-            <span className="font-extrabold text-slate-100">{player.dribble}</span>
+            <span className="text-giz/50 font-bold">DRI</span>
+            <span className="font-extrabold text-giz">{player.dribble}</span>
           </div>
           <div className="flex justify-between px-1">
-            <span className="text-slate-400 font-bold">DEF</span>
-            <span className="font-extrabold text-slate-100">{player.def}</span>
+            <span className="text-giz/50 font-bold">DEF</span>
+            <span className="font-extrabold text-giz">{player.def}</span>
           </div>
           <div className="flex justify-between px-1">
-            <span className="text-slate-400 font-bold">FIS</span>
-            <span className="font-extrabold text-slate-100">{player.physical}</span>
+            <span className="text-giz/50 font-bold">FIS</span>
+            <span className="font-extrabold text-giz">{player.physical}</span>
           </div>
         </div>
 
         {/* Aggregate Badges & Metrics */}
-        <div className="flex items-center justify-between text-xs text-slate-300 pt-1 border-t border-slate-800">
+        <div className="flex items-center justify-between text-xs text-giz/70 pt-1 border-t border-gramado-light">
           <div className="flex items-center gap-2">
-            <span title="Gols marcados" className="flex items-center gap-1 text-slate-200 font-bold">
+            <span title="Gols marcados" className="flex items-center gap-1 text-giz/85 font-bold">
               ⚽ {player.goals}
             </span>
-            <span title="Assistências" className="flex items-center gap-1 text-slate-200 font-bold">
+            <span title="Assistências" className="flex items-center gap-1 text-giz/85 font-bold">
               🎯 {player.assists}
             </span>
             {player.position === 'GK' && (
@@ -209,7 +209,7 @@ export const PlayerCard: React.FC<PlayerCardProps> = ({
             {player.badges.slice(0, 2).map((badge, idx) => (
               <span
                 key={idx}
-                className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-300 border border-emerald-500/20 truncate"
+                className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-capim/10 text-capim-light border border-capim/20 truncate"
               >
                 {badge}
               </span>

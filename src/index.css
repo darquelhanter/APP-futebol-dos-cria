@@ -1,1 +1,28 @@
 @import "tailwindcss";
+
+@theme {
+  --color-gramado: #0a1a14;
+  --color-gramado-light: #10241c;
+  --color-gramado-card: #14291f;
+  --color-giz: #edf3ea;
+  --color-capim: #3fa34d;
+  --color-capim-light: #55c766;
+  --color-refletor: #c6ff3d;
+  --color-barro: #c1633b;
+
+  --font-display: "Teko", sans-serif;
+  --font-mono: "Space Mono", monospace;
+}
+
+body {
+  background:
+    radial-gradient(ellipse 900px 480px at 50% -12%, rgba(198, 255, 61, 0.08), transparent 62%),
+    var(--color-gramado);
+  background-attachment: fixed;
+}
+
+/* Chalk touchline — signature dashed divider used across the app shell */
+.chalk-divider {
+  border-style: dashed;
+  border-color: rgba(237, 243, 234, 0.14);
+}

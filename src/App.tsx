@@ -142,9 +142,26 @@ export const App: React.FC = () => {
           setPlayers(cloudData.players);
         }
         if (cloudData?.peladas && Array.isArray(cloudData.peladas)) {
-          setPeladas(cloudData.peladas);
-          if (cloudData.peladas.length > 0 && !cloudData.peladas.find((p) => p.id === currentPeladaId)) {
-            setCurrentPeladaId(cloudData.peladas[0].id);
+          // Legacy peladas synced before creatorUid/creatorEmail existed have no
+          // recorded owner. Claim them for whoever opens the app next, once,
+          // instead of granting creator/admin rights to every visitor (security fix).
+          const repairedPeladas = cloudData.peladas.map((p) => {
+            if (!p.creatorUid && !p.creatorEmail) {
+              const claimed: Pelada = {
+                ...p,
+                creatorUid: user.uid,
+                creatorEmail: user.email || '',
+                creatorName: user.displayName || 'Organizador',
+              };
+              syncPeladaToCloud(claimed);
+              return claimed;
+            }
+            return p;
+          });
+
+          setPeladas(repairedPeladas);
+          if (repairedPeladas.length > 0 && !repairedPeladas.find((p) => p.id === currentPeladaId)) {
+            setCurrentPeladaId(repairedPeladas[0].id);
           }
         }
       }
@@ -245,11 +262,13 @@ export const App: React.FC = () => {
     }
   };
 
-  // Find the logged in user's linked player profile
+  // Find the logged in user's linked player profile.
+  // Matched only by uid/email (both set once, by this same account, via
+  // handleSaveUserProfile) — matching by display name would link this
+  // account to anyone else's card that happens to share the same name.
   const myLinkedPlayer = players.find((p) => {
     if (currentUser?.uid && p.userId === currentUser.uid) return true;
     if (currentUser?.email && p.userEmail === currentUser.email) return true;
-    if (currentUser?.displayName && p.name.toLowerCase() === currentUser.displayName.toLowerCase()) return true;
     return false;
   });
 
@@ -346,12 +365,12 @@ export const App: React.FC = () => {
   // If Auth is still initializing on first load
   if (authChecking) {
     return (
-      <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center text-slate-100 font-sans">
-        <div className="w-16 h-16 rounded-3xl bg-gradient-to-tr from-emerald-600 via-emerald-500 to-teal-400 flex items-center justify-center shadow-xl shadow-emerald-500/20 text-3xl mb-4 animate-bounce">
+      <div className="min-h-screen bg-gramado flex flex-col items-center justify-center text-giz font-sans">
+        <div className="w-16 h-16 rounded-3xl bg-gradient-to-tr from-capim via-capim-light to-refletor flex items-center justify-center shadow-xl shadow-capim/20 text-3xl mb-4 animate-bounce">
           ⚽
         </div>
-        <div className="flex items-center gap-2.5 text-sm font-bold text-slate-300">
-          <RefreshCw className="w-4 h-4 text-emerald-400 animate-spin" />
+        <div className="flex items-center gap-2.5 text-sm font-bold text-giz/70">
+          <RefreshCw className="w-4 h-4 text-refletor animate-spin" />
           <span>Verificando autorização...</span>
         </div>
       </div>
@@ -397,9 +416,9 @@ export const App: React.FC = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col selection:bg-emerald-500 selection:text-slate-950 font-sans pb-20 sm:pb-0">
+    <div className="min-h-screen text-giz flex flex-col selection:bg-refletor selection:text-gramado font-sans pb-20 sm:pb-0">
       {/* Top Header */}
-      <header className="sticky top-0 z-40 bg-slate-950/90 backdrop-blur-md border-b border-slate-800">
+      <header className="sticky top-0 z-40 bg-gramado/90 backdrop-blur-md border-b chalk-divider">
         <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16 sm:h-20 gap-2">
             {/* Logo and Brand */}
@@ -407,19 +426,19 @@ export const App: React.FC = () => {
               className="flex items-center gap-2.5 sm:gap-3 cursor-pointer"
               onClick={() => setActiveTab('overview')}
             >
-              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-gradient-to-tr from-emerald-600 via-emerald-500 to-teal-400 flex items-center justify-center shadow-lg shadow-emerald-500/20 text-2xl border border-emerald-400/40 shrink-0">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-gradient-to-tr from-capim via-capim-light to-refletor flex items-center justify-center shadow-lg shadow-capim/20 text-2xl border border-refletor/30 shrink-0">
                 ⚽
               </div>
               <div>
                 <div className="flex items-center gap-1.5 sm:gap-2">
-                  <h1 className="text-lg sm:text-2xl font-black text-white tracking-tight flex items-center gap-1.5 font-['Teko',sans-serif] uppercase tracking-wider text-2xl sm:text-3xl leading-none">
+                  <h1 className="text-lg sm:text-2xl font-black text-giz tracking-tight flex items-center gap-1.5 font-display uppercase tracking-wider text-2xl sm:text-3xl leading-none">
                     Futebol dos Cria
                   </h1>
-                  <span className="hidden md:inline-block text-[10px] font-black uppercase px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+                  <span className="hidden md:inline-block text-[10px] font-black uppercase px-2 py-0.5 rounded-full bg-capim/20 text-capim-light border border-capim/30">
                     Autorizado
                   </span>
                 </div>
-                <p className="text-[10px] sm:text-[11px] text-slate-400 font-medium hidden sm:block">
+                <p className="text-[10px] sm:text-[11px] text-giz/50 font-medium hidden sm:block">
                   Gestão Completa de Peladas, Sorteios, Financeiro & Rankings
                 </p>
               </div>
@@ -432,10 +451,10 @@ export const App: React.FC = () => {
                 <button
                   id="header-btn-install-app"
                   onClick={() => setIsInstallModalOpen(true)}
-                  className="px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl sm:rounded-2xl bg-gradient-to-r from-emerald-600/20 to-teal-500/20 hover:from-emerald-600/30 hover:to-teal-500/30 border border-emerald-500/40 text-emerald-300 text-[11px] sm:text-xs font-bold flex items-center gap-1.5 shadow-sm transition-all active:scale-95 animate-pulse hover:animate-none"
+                  className="px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl sm:rounded-2xl bg-gradient-to-r from-capim/20 to-refletor/10 hover:from-capim/30 hover:to-refletor/20 border border-capim/40 text-capim-light text-[11px] sm:text-xs font-bold flex items-center gap-1.5 shadow-sm transition-all active:scale-95 animate-pulse hover:animate-none"
                   title="Baixar e Instalar Aplicativo no Celular"
                 >
-                  <Download className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-400" />
+                  <Download className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-capim-light" />
                   <span className="hidden sm:inline">Baixar App</span>
                 </button>
               )}
@@ -447,7 +466,7 @@ export const App: React.FC = () => {
                 className={`px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl sm:rounded-2xl border text-[11px] sm:text-xs font-black flex items-center gap-1.5 shadow-sm transition-all active:scale-95 ${
                   myLinkedPlayer
                     ? 'bg-amber-500/15 hover:bg-amber-500/25 border-amber-500/40 text-amber-300'
-                    : 'bg-gradient-to-r from-amber-500/25 to-emerald-500/25 hover:from-amber-500/35 hover:to-emerald-500/35 border-amber-500/50 text-white shadow-amber-500/10'
+                    : 'bg-gradient-to-r from-amber-500/25 to-capim/25 hover:from-amber-500/35 hover:to-capim/35 border-amber-500/50 text-giz shadow-amber-500/10'
                 }`}
                 title="Criar ou Personalizar Meu Perfil Oficial de Jogador"
               >
@@ -455,7 +474,7 @@ export const App: React.FC = () => {
                   <>
                     <Crown className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-400" />
                     <span>Meu Perfil</span>
-                    <span className="bg-amber-400 text-slate-950 px-1.5 py-0.2 rounded font-black text-[10px]">
+                    <span className="bg-amber-400 text-gramado px-1.5 py-0.2 rounded font-black text-[10px] font-mono">
                       {myLinkedPlayer.overall}
                     </span>
                   </>
@@ -471,7 +490,7 @@ export const App: React.FC = () => {
               <button
                 id="header-btn-user-profile"
                 onClick={() => setIsAuthModalOpen(true)}
-                className="flex items-center gap-2 p-1 sm:px-2.5 sm:py-1.5 rounded-xl sm:rounded-2xl bg-slate-900 hover:bg-slate-800 border border-emerald-500/40 shadow-sm transition-all text-left"
+                className="flex items-center gap-2 p-1 sm:px-2.5 sm:py-1.5 rounded-xl sm:rounded-2xl bg-gramado-card hover:bg-gramado-light border border-capim/30 shadow-sm transition-all text-left"
                 title="Perfil Google Conectado"
               >
                 <div className="relative">
@@ -479,21 +498,21 @@ export const App: React.FC = () => {
                     <img
                       src={currentUser.photoURL}
                       alt={currentUser.displayName || 'Jogador'}
-                      className="w-7 h-7 sm:w-8 sm:h-8 rounded-full border border-emerald-400 object-cover"
+                      className="w-7 h-7 sm:w-8 sm:h-8 rounded-full border border-capim-light object-cover"
                       referrerPolicy="no-referrer"
                     />
                   ) : (
-                    <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-emerald-600 text-white font-bold flex items-center justify-center text-xs">
+                    <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-capim text-giz font-bold flex items-center justify-center text-xs">
                       {currentUser.displayName ? currentUser.displayName[0] : 'U'}
                     </div>
                   )}
-                  <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-500 border-2 border-slate-900" />
+                  <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-refletor border-2 border-gramado-card" />
                 </div>
                 <div className="hidden md:block">
-                  <div className="text-[11px] font-bold text-slate-200 leading-tight truncate max-w-[100px]">
+                  <div className="text-[11px] font-bold text-giz/90 leading-tight truncate max-w-[100px]">
                     {currentUser.displayName?.split(' ')[0] || 'Jogador'}
                   </div>
-                  <div className="text-[9px] text-emerald-400 font-bold flex items-center gap-1">
+                  <div className="text-[9px] text-capim-light font-bold flex items-center gap-1">
                     <Cloud className="w-2.5 h-2.5" /> Sincronizado
                   </div>
                 </div>
@@ -507,7 +526,7 @@ export const App: React.FC = () => {
                   className={`px-2 sm:px-3 py-1.5 sm:py-2 rounded-xl sm:rounded-2xl border text-[11px] sm:text-xs font-bold flex items-center gap-1.5 transition-all ${
                     isPeladaCreator(currentPelada, currentUser)
                       ? 'bg-amber-500/10 hover:bg-amber-500/20 border-amber-500/40 text-amber-300'
-                      : 'bg-slate-900 hover:bg-slate-800 border-slate-700 text-slate-300'
+                      : 'bg-gramado-card hover:bg-gramado-light border-giz/15 text-giz/70'
                   }`}
                   title="Gerenciar Privilégios & Administradores"
                 >
@@ -521,10 +540,10 @@ export const App: React.FC = () => {
                 <button
                   id="header-btn-edit-pelada"
                   onClick={() => setIsEditPeladaModalOpen(true)}
-                  className="px-2 sm:px-3 py-1.5 sm:py-2 rounded-xl sm:rounded-2xl border border-emerald-500/40 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 text-[11px] sm:text-xs font-bold flex items-center gap-1.5 transition-all"
+                  className="px-2 sm:px-3 py-1.5 sm:py-2 rounded-xl sm:rounded-2xl border border-capim/40 bg-capim/10 hover:bg-capim/20 text-capim-light text-[11px] sm:text-xs font-bold flex items-center gap-1.5 transition-all"
                   title="Editar Dados da Pelada (Horários, Local, Valores)"
                 >
-                  <Edit3 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-400" />
+                  <Edit3 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-capim-light" />
                   <span className="hidden lg:inline">Editar Pelada</span>
                 </button>
               )}
@@ -535,7 +554,7 @@ export const App: React.FC = () => {
                   <select
                     value={currentPeladaId}
                     onChange={(e) => setCurrentPeladaId(e.target.value)}
-                    className="bg-slate-900 border border-slate-700 text-xs font-bold text-slate-200 rounded-xl px-3 py-2 pr-7 focus:outline-none focus:border-emerald-500 appearance-none cursor-pointer"
+                    className="bg-gramado-card border border-giz/15 text-xs font-bold text-giz/90 rounded-xl px-3 py-2 pr-7 focus:outline-none focus:border-capim appearance-none cursor-pointer"
                   >
                     {peladas.map((p) => (
                       <option key={p.id} value={p.id}>
@@ -543,7 +562,7 @@ export const App: React.FC = () => {
                       </option>
                     ))}
                   </select>
-                  <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                  <ChevronDown className="w-3.5 h-3.5 text-giz/50 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
                 </div>
               )}
 
@@ -551,12 +570,12 @@ export const App: React.FC = () => {
               <button
                 id="header-btn-notifications"
                 onClick={() => setIsNotificationsModalOpen(true)}
-                className="relative p-2 sm:p-2.5 rounded-xl sm:rounded-2xl bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 hover:text-emerald-400 transition-colors"
+                className="relative p-2 sm:p-2.5 rounded-xl sm:rounded-2xl bg-gramado-card hover:bg-gramado-light border border-giz/10 text-giz/60 hover:text-refletor transition-colors"
                 title="Central de Notificações Automáticas"
               >
                 <Bell className="w-4 h-4 sm:w-5 sm:h-5" />
                 {unreadNotificationsCount > 0 && (
-                  <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-emerald-500 text-slate-950 font-black text-[9px] flex items-center justify-center animate-pulse">
+                  <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-refletor text-gramado font-black text-[9px] font-mono flex items-center justify-center animate-pulse">
                     {unreadNotificationsCount}
                   </span>
                 )}
@@ -566,7 +585,7 @@ export const App: React.FC = () => {
               <button
                 id="header-btn-clear-data"
                 onClick={handleClearAllData}
-                className="p-2 sm:p-2.5 rounded-xl sm:rounded-2xl bg-slate-900 hover:bg-red-500/20 border border-slate-800 hover:border-red-500/40 text-slate-400 hover:text-red-400 transition-colors"
+                className="p-2 sm:p-2.5 rounded-xl sm:rounded-2xl bg-gramado-card hover:bg-red-500/20 border border-giz/10 hover:border-red-500/40 text-giz/50 hover:text-red-400 transition-colors"
                 title="Limpar todos os dados do app"
               >
                 <Trash2 className="w-4 h-4 sm:w-5 sm:h-5" />
@@ -576,7 +595,7 @@ export const App: React.FC = () => {
               <button
                 id="header-btn-new-pelada"
                 onClick={() => setIsNewPeladaModalOpen(true)}
-                className="px-2.5 sm:px-4 py-1.5 sm:py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl sm:rounded-2xl text-xs font-black flex items-center gap-1.5 shadow-lg shadow-emerald-600/20 transition-all active:scale-95"
+                className="px-2.5 sm:px-4 py-1.5 sm:py-2.5 bg-capim hover:bg-capim-light text-giz rounded-xl sm:rounded-2xl text-xs font-black flex items-center gap-1.5 shadow-lg shadow-capim/20 transition-all active:scale-95"
               >
                 <Plus className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 <span className="hidden sm:inline">Nova Pelada</span>
@@ -585,7 +604,7 @@ export const App: React.FC = () => {
           </div>
 
           {/* Navigation Tabs Bar (Desktop and Tablet) */}
-          <div className="hidden sm:flex items-center gap-1 sm:gap-2 overflow-x-auto py-2 border-t border-slate-800/80 no-scrollbar">
+          <div className="hidden sm:flex items-center gap-1 sm:gap-2 overflow-x-auto py-2 border-t chalk-divider no-scrollbar">
             {navigationTabs.map((tab) => {
               const Icon = tab.icon;
               const isActive = activeTab === tab.id;
@@ -596,16 +615,16 @@ export const App: React.FC = () => {
                   onClick={() => setActiveTab(tab.id)}
                   className={`px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all flex items-center gap-2 shrink-0 ${
                     isActive
-                      ? 'bg-emerald-600 text-white shadow-md shadow-emerald-600/30'
-                      : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900'
+                      ? 'bg-capim text-gramado shadow-md shadow-capim/30'
+                      : 'text-giz/50 hover:text-giz hover:bg-gramado-card'
                   }`}
                 >
                   <Icon className="w-4 h-4" />
                   <span>{tab.label}</span>
                   {tab.badge !== undefined && tab.badge > 0 && (
                     <span
-                      className={`text-[10px] px-1.5 py-0.2 rounded-full font-black ${
-                        isActive ? 'bg-slate-950 text-emerald-400' : 'bg-slate-800 text-slate-300'
+                      className={`text-[10px] px-1.5 py-0.2 rounded-full font-black font-mono ${
+                        isActive ? 'bg-gramado text-refletor' : 'bg-gramado-card text-giz/60'
                       }`}
                     >
                       {tab.badge}
@@ -642,6 +661,7 @@ export const App: React.FC = () => {
             pelada={currentPelada}
             allPlayers={players}
             onUpdatePelada={handleUpdateCurrentPelada}
+            onAddPlayer={(newPlayer) => setPlayers((prev) => [...prev, newPlayer])}
             onSelectPlayer={(p) => setSelectedPlayer(p)}
             onAddNotification={handleAddNotification}
             onOpenNewPelada={() => setIsNewPeladaModalOpen(true)}
@@ -707,7 +727,7 @@ export const App: React.FC = () => {
       </main>
 
       {/* Mobile Bottom Navigation Bar */}
-      <nav className="sm:hidden fixed bottom-0 left-0 right-0 z-40 bg-slate-950/95 backdrop-blur-xl border-t border-slate-800 px-2 py-1.5 flex items-center justify-around safe-area-pb">
+      <nav className="sm:hidden fixed bottom-0 left-0 right-0 z-40 bg-gramado/95 backdrop-blur-xl border-t chalk-divider px-2 py-1.5 flex items-center justify-around safe-area-pb">
         {[
           { id: 'overview', label: 'Início', icon: LayoutDashboard },
           { id: 'presencas', label: 'Presenças', icon: Users },
@@ -724,10 +744,10 @@ export const App: React.FC = () => {
               key={item.id}
               onClick={() => setActiveTab(item.id)}
               className={`flex flex-col items-center justify-center py-1 px-2 rounded-xl transition-all ${
-                isActive ? 'text-emerald-400 font-bold' : 'text-slate-400 hover:text-slate-200'
+                isActive ? 'text-refletor font-bold' : 'text-giz/40 hover:text-giz/70'
               }`}
             >
-              <Icon className={`w-5 h-5 ${isActive ? 'scale-110 text-emerald-400' : ''}`} />
+              <Icon className={`w-5 h-5 ${isActive ? 'scale-110 text-refletor' : ''}`} />
               <span className="text-[10px] mt-0.5 tracking-tight">{item.label}</span>
             </button>
           );
@@ -735,18 +755,18 @@ export const App: React.FC = () => {
       </nav>
 
       {/* Footer with Reset and Quick links */}
-      <footer className="border-t border-slate-900 bg-slate-950/60 py-6 text-xs text-slate-500">
+      <footer className="border-t chalk-divider bg-gramado/60 py-6 text-xs text-giz/40">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
             <span className="text-base">⚽</span>
-            <span className="font-bold text-slate-400">Futebol dos Cria</span>
+            <span className="font-bold text-giz/70">Futebol dos Cria</span>
             <span>• O Hub definitivo para Peladas, Gestão Financeira & Rankings</span>
           </div>
 
           <div className="flex items-center gap-4 flex-wrap justify-center">
             <button
               onClick={() => setIsInstallModalOpen(true)}
-              className="text-emerald-400 hover:text-emerald-300 flex items-center gap-1 font-bold transition-colors"
+              className="text-refletor hover:text-capim-light flex items-center gap-1 font-bold transition-colors"
             >
               <Smartphone className="w-3.5 h-3.5" />
               Baixar no Celular
@@ -761,7 +781,7 @@ export const App: React.FC = () => {
             </button>
             <button
               onClick={handleResetDemoData}
-              className="text-slate-500 hover:text-slate-400 flex items-center gap-1 transition-colors"
+              className="text-giz/40 hover:text-giz/60 flex items-center gap-1 transition-colors"
               title="Restaurar dados de exemplo"
             >
               <RotateCcw className="w-3.5 h-3.5" />

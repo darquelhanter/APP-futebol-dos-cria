@@ -80,12 +80,12 @@ export const LeaderboardView: React.FC<LeaderboardViewProps> = ({
 
   if (players.length === 0) {
     return (
-      <div className="rounded-3xl bg-slate-900 border border-slate-800 p-8 sm:p-12 text-center max-w-xl mx-auto my-8 shadow-2xl">
+      <div className="rounded-3xl bg-gramado-card border border-gramado-light p-8 sm:p-12 text-center max-w-xl mx-auto my-8 shadow-2xl">
         <Trophy className="w-16 h-16 text-amber-400 mx-auto mb-4" />
-        <h2 className="text-2xl font-black text-white font-['Teko',sans-serif] uppercase tracking-wider text-3xl">
+        <h2 className="text-2xl font-black text-giz font-['Teko',sans-serif] uppercase tracking-wider text-3xl">
           Ranking Aguardando Jogadores
         </h2>
-        <p className="text-xs sm:text-sm text-slate-300 mt-2 mb-4">
+        <p className="text-xs sm:text-sm text-giz/70 mt-2 mb-4">
           Cadastre os atletas e realize as partidas para gerar as classificações de artilharia, assistências, notas e MVP.
         </p>
       </div>
@@ -131,8 +131,8 @@ export const LeaderboardView: React.FC<LeaderboardViewProps> = ({
             onClick={() => setActiveCategory(tab.id as RankingCategory)}
             className={`px-4 py-2 rounded-2xl text-xs font-black whitespace-nowrap transition-all flex items-center gap-1.5 ${
               activeCategory === tab.id
-                ? 'bg-emerald-600 text-white shadow-lg'
-                : 'bg-slate-900 text-slate-400 hover:text-white border border-slate-800'
+                ? 'bg-capim text-giz shadow-lg'
+                : 'bg-gramado-card text-giz/50 hover:text-giz border border-gramado-light'
             }`}
           >
             {tab.label}
@@ -141,16 +141,16 @@ export const LeaderboardView: React.FC<LeaderboardViewProps> = ({
       </div>
 
       {/* Header Banner */}
-      <div className="bg-gradient-to-r from-slate-900 via-slate-900/95 to-slate-950 p-6 rounded-3xl border border-slate-800 shadow-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <div className="bg-gradient-to-r from-gramado-card via-gramado-card/95 to-gramado p-6 rounded-3xl border border-gramado-light shadow-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <span className="text-xs font-black uppercase tracking-wider text-emerald-400 bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/30">
+          <span className="text-xs font-black uppercase tracking-wider text-capim-light bg-capim/10 px-3 py-1 rounded-full border border-capim/30">
             Leaderboard Oficial
           </span>
-          <h2 className="text-xl sm:text-2xl font-black text-white mt-1 flex items-center gap-2">
+          <h2 className="text-xl sm:text-2xl font-black text-giz mt-1 flex items-center gap-2">
             <span>{categoryMeta.icon}</span>
             <span>{categoryMeta.title}</span>
           </h2>
-          <p className="text-xs text-slate-400 mt-1">{categoryMeta.desc}</p>
+          <p className="text-xs text-giz/50 mt-1">{categoryMeta.desc}</p>
         </div>
 
         {onOpenUserProfile && (
@@ -174,20 +174,20 @@ export const LeaderboardView: React.FC<LeaderboardViewProps> = ({
             <div
               id={`podium-2nd-${top3[1].id}`}
               onClick={() => onSelectPlayer(top3[1])}
-              className="order-2 md:order-1 bg-gradient-to-b from-slate-800/80 to-slate-900 p-5 rounded-3xl border border-slate-700/80 shadow-xl text-center cursor-pointer hover:-translate-y-1 transition-transform relative group"
+              className="order-2 md:order-1 bg-gradient-to-b from-gramado-light/80 to-gramado-card p-5 rounded-3xl border border-giz/80 shadow-xl text-center cursor-pointer hover:-translate-y-1 transition-transform relative group"
             >
-              <div className="w-10 h-10 rounded-full bg-slate-300 text-slate-950 font-black text-base flex items-center justify-center mx-auto -mt-10 mb-3 shadow-lg border-2 border-slate-100">
+              <div className="w-10 h-10 rounded-full bg-giz/70 text-gramado font-black text-base flex items-center justify-center mx-auto -mt-10 mb-3 shadow-lg border-2 border-giz">
                 2º
               </div>
               <img
                 src={top3[1].photoUrl}
                 alt={top3[1].name}
                 referrerPolicy="no-referrer"
-                className="w-20 h-20 rounded-2xl object-cover mx-auto mb-3 border-2 border-slate-400 shadow-md group-hover:scale-105 transition-transform"
+                className="w-20 h-20 rounded-2xl object-cover mx-auto mb-3 border-2 border-giz/50 shadow-md group-hover:scale-105 transition-transform"
               />
-              <h3 className="text-base font-extrabold text-white truncate">{top3[1].nickname || top3[1].name}</h3>
-              <p className="text-xs text-slate-400 mb-2">{top3[1].position} • {top3[1].name}</p>
-              <span className="text-sm font-black text-slate-200 bg-slate-800 px-3 py-1 rounded-xl border border-slate-700 inline-block">
+              <h3 className="text-base font-extrabold text-giz truncate">{top3[1].nickname || top3[1].name}</h3>
+              <p className="text-xs text-giz/50 mb-2">{top3[1].position} • {top3[1].name}</p>
+              <span className="text-sm font-black text-giz/85 bg-gramado-light px-3 py-1 rounded-xl border border-giz/15 inline-block">
                 {getMetricValue(top3[1])}
               </span>
             </div>
@@ -198,9 +198,9 @@ export const LeaderboardView: React.FC<LeaderboardViewProps> = ({
             <div
               id={`podium-1st-${top3[0].id}`}
               onClick={() => onSelectPlayer(top3[0])}
-              className="order-1 md:order-2 bg-gradient-to-b from-amber-500/20 via-slate-900 to-slate-950 p-6 rounded-3xl border-2 border-amber-400/60 shadow-2xl text-center cursor-pointer hover:-translate-y-1.5 transition-transform relative group md:-mt-6"
+              className="order-1 md:order-2 bg-gradient-to-b from-amber-500/20 via-gramado-card to-gramado p-6 rounded-3xl border-2 border-amber-400/60 shadow-2xl text-center cursor-pointer hover:-translate-y-1.5 transition-transform relative group md:-mt-6"
             >
-              <div className="w-12 h-12 rounded-full bg-gradient-to-r from-amber-400 to-yellow-500 text-slate-950 font-black text-lg flex items-center justify-center mx-auto -mt-12 mb-3 shadow-xl border-2 border-yellow-300">
+              <div className="w-12 h-12 rounded-full bg-gradient-to-r from-amber-400 to-yellow-500 text-gramado font-black text-lg flex items-center justify-center mx-auto -mt-12 mb-3 shadow-xl border-2 border-yellow-300">
                 👑 1º
               </div>
               <img
@@ -209,7 +209,7 @@ export const LeaderboardView: React.FC<LeaderboardViewProps> = ({
                 referrerPolicy="no-referrer"
                 className="w-24 h-24 rounded-2xl object-cover mx-auto mb-3 border-4 border-amber-400 shadow-xl group-hover:scale-105 transition-transform"
               />
-              <h3 className="text-lg font-black text-white truncate">{top3[0].nickname || top3[0].name}</h3>
+              <h3 className="text-lg font-black text-giz truncate">{top3[0].nickname || top3[0].name}</h3>
               <p className="text-xs text-amber-300/80 font-bold mb-3">{top3[0].position} • {top3[0].name}</p>
               <span className="text-base font-black text-amber-300 bg-amber-500/20 px-4 py-1.5 rounded-xl border border-amber-500/40 inline-block shadow-md">
                 {getMetricValue(top3[0])}
@@ -222,7 +222,7 @@ export const LeaderboardView: React.FC<LeaderboardViewProps> = ({
             <div
               id={`podium-3rd-${top3[2].id}`}
               onClick={() => onSelectPlayer(top3[2])}
-              className="order-3 bg-gradient-to-b from-amber-900/30 to-slate-900 p-5 rounded-3xl border border-amber-800/60 shadow-xl text-center cursor-pointer hover:-translate-y-1 transition-transform relative group"
+              className="order-3 bg-gradient-to-b from-amber-900/30 to-gramado-card p-5 rounded-3xl border border-amber-800/60 shadow-xl text-center cursor-pointer hover:-translate-y-1 transition-transform relative group"
             >
               <div className="w-10 h-10 rounded-full bg-amber-700 text-amber-100 font-black text-base flex items-center justify-center mx-auto -mt-10 mb-3 shadow-lg border-2 border-amber-600">
                 3º
@@ -233,9 +233,9 @@ export const LeaderboardView: React.FC<LeaderboardViewProps> = ({
                 referrerPolicy="no-referrer"
                 className="w-20 h-20 rounded-2xl object-cover mx-auto mb-3 border-2 border-amber-700 shadow-md group-hover:scale-105 transition-transform"
               />
-              <h3 className="text-base font-extrabold text-white truncate">{top3[2].nickname || top3[2].name}</h3>
-              <p className="text-xs text-slate-400 mb-2">{top3[2].position} • {top3[2].name}</p>
-              <span className="text-sm font-black text-amber-200 bg-slate-800 px-3 py-1 rounded-xl border border-slate-700 inline-block">
+              <h3 className="text-base font-extrabold text-giz truncate">{top3[2].nickname || top3[2].name}</h3>
+              <p className="text-xs text-giz/50 mb-2">{top3[2].position} • {top3[2].name}</p>
+              <span className="text-sm font-black text-amber-200 bg-gramado-light px-3 py-1 rounded-xl border border-giz/15 inline-block">
                 {getMetricValue(top3[2])}
               </span>
             </div>
@@ -244,9 +244,9 @@ export const LeaderboardView: React.FC<LeaderboardViewProps> = ({
       )}
 
       {/* Full Leaderboard Table (Position 4 onwards) */}
-      <div className="bg-slate-900/90 rounded-3xl border border-slate-800 p-5 shadow-xl">
-        <h3 className="text-base font-black text-white mb-4 flex items-center gap-2">
-          <Medal className="w-5 h-5 text-emerald-400" />
+      <div className="bg-gramado-card/90 rounded-3xl border border-gramado-light p-5 shadow-xl">
+        <h3 className="text-base font-black text-giz mb-4 flex items-center gap-2">
+          <Medal className="w-5 h-5 text-capim-light" />
           Classificação Completa dos Atletas
         </h3>
 
@@ -256,7 +256,7 @@ export const LeaderboardView: React.FC<LeaderboardViewProps> = ({
               key={p.id}
               id={`rank-row-${p.id}`}
               onClick={() => onSelectPlayer(p)}
-              className="flex items-center justify-between p-3.5 bg-slate-950/70 hover:bg-slate-950 border border-slate-800 hover:border-slate-700 rounded-2xl cursor-pointer transition-all"
+              className="flex items-center justify-between p-3.5 bg-gramado/70 hover:bg-gramado border border-gramado-light hover:border-giz/15 rounded-2xl cursor-pointer transition-all"
             >
               <div className="flex items-center gap-3.5">
                 <span
@@ -264,10 +264,10 @@ export const LeaderboardView: React.FC<LeaderboardViewProps> = ({
                     idx === 0
                       ? 'text-amber-400 font-extrabold'
                       : idx === 1
-                      ? 'text-slate-300 font-extrabold'
+                      ? 'text-giz/70 font-extrabold'
                       : idx === 2
                       ? 'text-amber-600 font-extrabold'
-                      : 'text-slate-500'
+                      : 'text-giz/35'
                   }`}
                 >
                   {idx + 1}º
@@ -276,19 +276,19 @@ export const LeaderboardView: React.FC<LeaderboardViewProps> = ({
                   src={p.photoUrl}
                   alt={p.name}
                   referrerPolicy="no-referrer"
-                  className="w-10 h-10 rounded-xl object-cover border border-slate-700"
+                  className="w-10 h-10 rounded-xl object-cover border border-giz/15"
                 />
                 <div>
                   <div className="flex items-center gap-2">
-                    <h4 className="text-sm font-bold text-white hover:text-emerald-400 transition-colors">
+                    <h4 className="text-sm font-bold text-giz hover:text-capim-light transition-colors">
                       {p.nickname || p.name}
                     </h4>
-                    <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-slate-800 text-slate-300">
+                    <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-gramado-light text-giz/70">
                       {p.position}
                     </span>
-                    <span className="text-[10px] text-slate-400 capitalize">{p.type}</span>
+                    <span className="text-[10px] text-giz/50 capitalize">{p.type}</span>
                   </div>
-                  <p className="text-xs text-slate-400">
+                  <p className="text-xs text-giz/50">
                     {p.matchesCount} jogos • {p.goals} gols • {p.assists} assistências • ⭐ {p.averageRating.toFixed(1)}
                   </p>
                 </div>

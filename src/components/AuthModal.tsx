@@ -100,19 +100,19 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gramado/80 backdrop-blur-sm animate-in fade-in duration-200">
       <div
         id="auth-modal-card"
-        className="relative w-full max-w-md bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl shadow-emerald-950/30 overflow-hidden"
+        className="relative w-full max-w-md bg-gramado-card border border-gramado-light rounded-3xl p-6 sm:p-8 shadow-2xl shadow-gramado-card/30 overflow-hidden"
       >
         {/* Background glow */}
-        <div className="absolute -top-24 -right-24 w-48 h-48 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute -bottom-24 -left-24 w-48 h-48 bg-teal-500/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute -top-24 -right-24 w-48 h-48 bg-capim/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute -bottom-24 -left-24 w-48 h-48 bg-barro/10 rounded-full blur-3xl pointer-events-none" />
 
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 p-2 text-slate-400 hover:text-white rounded-full hover:bg-slate-800 transition-colors"
+          className="absolute top-4 right-4 p-2 text-giz/50 hover:text-giz rounded-full hover:bg-gramado-light transition-colors"
         >
           <X className="w-5 h-5" />
         </button>
@@ -125,39 +125,39 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                 <img
                   src={currentUser.photoURL}
                   alt={currentUser.displayName || 'Usuário'}
-                  className="w-20 h-20 rounded-full border-2 border-emerald-500 shadow-lg shadow-emerald-500/20 object-cover"
+                  className="w-20 h-20 rounded-full border-2 border-capim shadow-lg shadow-capim/20 object-cover"
                   referrerPolicy="no-referrer"
                 />
               ) : (
-                <div className="w-20 h-20 rounded-full bg-emerald-600/30 border-2 border-emerald-500 flex items-center justify-center text-emerald-400 text-3xl font-black">
+                <div className="w-20 h-20 rounded-full bg-capim/30 border-2 border-capim flex items-center justify-center text-capim-light text-3xl font-black">
                   {currentUser.displayName ? currentUser.displayName[0] : 'U'}
                 </div>
               )}
-              <div className="absolute -bottom-1 -right-1 bg-emerald-500 text-slate-950 p-1 rounded-full border-2 border-slate-900">
+              <div className="absolute -bottom-1 -right-1 bg-capim text-gramado p-1 rounded-full border-2 border-gramado-card">
                 <CheckCircle2 className="w-4 h-4 stroke-[3]" />
               </div>
             </div>
 
-            <span className="text-[11px] font-black uppercase tracking-wider px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 mb-2">
+            <span className="text-[11px] font-black uppercase tracking-wider px-3 py-1 rounded-full bg-capim/10 text-capim-light border border-capim/20 mb-2">
               Conta Conectada com Gmail
             </span>
 
-            <h3 className="text-xl font-bold text-white mb-1">
+            <h3 className="text-xl font-bold text-giz mb-1">
               {currentUser.displayName || 'Jogador dos Cria'}
             </h3>
-            <p className="text-xs text-slate-400 mb-6">{currentUser.email}</p>
+            <p className="text-xs text-giz/50 mb-6">{currentUser.email}</p>
 
             {/* Cloud Sync Status Card */}
-            <div className="w-full bg-slate-950/70 border border-slate-800/80 rounded-2xl p-4 mb-5 text-left flex items-start gap-3">
-              <div className="p-2.5 rounded-xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 shrink-0">
+            <div className="w-full bg-gramado/70 border border-gramado-light/80 rounded-2xl p-4 mb-5 text-left flex items-start gap-3">
+              <div className="p-2.5 rounded-xl bg-capim/10 text-capim-light border border-capim/20 shrink-0">
                 <Cloud className="w-5 h-5" />
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
-                  <h4 className="text-xs font-bold text-slate-200">Sincronização em Nuvem Ativa</h4>
-                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
+                  <h4 className="text-xs font-bold text-giz/85">Sincronização em Nuvem Ativa</h4>
+                  <span className="w-2 h-2 rounded-full bg-capim-light animate-ping" />
                 </div>
-                <p className="text-[11px] text-slate-400 mt-0.5 leading-relaxed">
+                <p className="text-[11px] text-giz/50 mt-0.5 leading-relaxed">
                   Suas peladas, escalações, pagamentos e estatísticas estão sincronizados com sua conta Google e acessíveis em qualquer celular ou computador.
                 </p>
               </div>
@@ -165,18 +165,18 @@ export const AuthModal: React.FC<AuthModalProps> = ({
 
             {/* Player Card Integration */}
             {onAddPlayer && !existingPlayer && (
-              <div className="w-full bg-gradient-to-r from-slate-950 to-slate-900 border border-amber-500/30 rounded-2xl p-4 mb-5 text-left">
+              <div className="w-full bg-gradient-to-r from-gramado to-gramado-card border border-amber-500/30 rounded-2xl p-4 mb-5 text-left">
                 <div className="flex items-center gap-2 text-amber-400 text-xs font-bold mb-1">
                   <Sparkles className="w-4 h-4" />
                   <span>Criar Minha Carta no Elenco</span>
                 </div>
-                <p className="text-[11px] text-slate-400 mb-3">
+                <p className="text-[11px] text-giz/50 mb-3">
                   Adicione sua própria carta estilo FUT ao elenco com sua foto e nome da conta Google.
                 </p>
                 <button
                   onClick={handleCreateOrLinkPlayer}
                   disabled={justLinked}
-                  className="w-full py-2 bg-amber-500 hover:bg-amber-400 text-slate-950 rounded-xl font-black text-xs transition-all active:scale-95 flex items-center justify-center gap-1.5"
+                  className="w-full py-2 bg-amber-500 hover:bg-amber-400 text-gramado rounded-xl font-black text-xs transition-all active:scale-95 flex items-center justify-center gap-1.5"
                 >
                   {justLinked ? (
                     <>
@@ -195,7 +195,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
             <div className="flex gap-3 w-full">
               <button
                 onClick={onClose}
-                className="flex-1 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl text-xs font-bold transition-colors"
+                className="flex-1 py-2.5 bg-gramado-light hover:bg-giz/15 text-giz/85 rounded-xl text-xs font-bold transition-colors"
               >
                 Fechar
               </button>
@@ -213,14 +213,14 @@ export const AuthModal: React.FC<AuthModalProps> = ({
           /* Log In Request View */
           <div className="text-center">
             {/* Header Icon */}
-            <div className="w-16 h-16 mx-auto rounded-3xl bg-gradient-to-tr from-emerald-600 to-teal-400 flex items-center justify-center text-3xl shadow-xl shadow-emerald-500/20 mb-4 border border-emerald-400/40">
+            <div className="w-16 h-16 mx-auto rounded-3xl bg-gradient-to-tr from-capim to-barro flex items-center justify-center text-3xl shadow-xl shadow-capim/20 mb-4 border border-capim-light/40">
               ⚽
             </div>
 
-            <h3 className="text-2xl font-black text-white tracking-tight mb-2 font-['Teko',sans-serif] uppercase tracking-wider text-3xl leading-none">
+            <h3 className="text-2xl font-black text-giz tracking-tight mb-2 font-['Teko',sans-serif] uppercase tracking-wider text-3xl leading-none">
               Entrar no Futebol dos Cria
             </h3>
-            <p className="text-xs text-slate-300 mb-6 leading-relaxed max-w-sm mx-auto">
+            <p className="text-xs text-giz/70 mb-6 leading-relaxed max-w-sm mx-auto">
               Conecte sua conta do <strong>Gmail / Google</strong> para salvar suas peladas na nuvem, participar de sorteios, acompanhar suas estatísticas e sincronizar no celular.
             </p>
 
@@ -236,10 +236,10 @@ export const AuthModal: React.FC<AuthModalProps> = ({
               id="btn-google-login-action"
               onClick={handleGoogleLogin}
               disabled={loading}
-              className="w-full py-3.5 px-4 bg-white hover:bg-slate-100 text-slate-900 rounded-2xl font-bold text-sm shadow-xl shadow-white/5 transition-all flex items-center justify-center gap-3 border border-slate-200 active:scale-95 disabled:opacity-50"
+              className="w-full py-3.5 px-4 bg-white hover:bg-giz text-gramado-card rounded-2xl font-bold text-sm shadow-xl shadow-white/5 transition-all flex items-center justify-center gap-3 border border-giz/85 active:scale-95 disabled:opacity-50"
             >
               {loading ? (
-                <RefreshCw className="w-5 h-5 animate-spin text-slate-700" />
+                <RefreshCw className="w-5 h-5 animate-spin text-giz/15" />
               ) : (
                 <svg className="w-5 h-5" viewBox="0 0 24 24">
                   <path
@@ -264,21 +264,21 @@ export const AuthModal: React.FC<AuthModalProps> = ({
             </button>
 
             {/* Features summary */}
-            <div className="grid grid-cols-2 gap-2 mt-6 pt-6 border-t border-slate-800 text-left">
-              <div className="flex items-center gap-2 text-[11px] text-slate-400">
-                <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
+            <div className="grid grid-cols-2 gap-2 mt-6 pt-6 border-t border-gramado-light text-left">
+              <div className="flex items-center gap-2 text-[11px] text-giz/50">
+                <ShieldCheck className="w-4 h-4 text-capim-light shrink-0" />
                 <span>Login Seguro via Google</span>
               </div>
-              <div className="flex items-center gap-2 text-[11px] text-slate-400">
-                <Cloud className="w-4 h-4 text-emerald-400 shrink-0" />
+              <div className="flex items-center gap-2 text-[11px] text-giz/50">
+                <Cloud className="w-4 h-4 text-capim-light shrink-0" />
                 <span>Backup Automático</span>
               </div>
-              <div className="flex items-center gap-2 text-[11px] text-slate-400">
-                <Sparkles className="w-4 h-4 text-emerald-400 shrink-0" />
+              <div className="flex items-center gap-2 text-[11px] text-giz/50">
+                <Sparkles className="w-4 h-4 text-capim-light shrink-0" />
                 <span>Perfil de Atleta</span>
               </div>
-              <div className="flex items-center gap-2 text-[11px] text-slate-400">
-                <User className="w-4 h-4 text-emerald-400 shrink-0" />
+              <div className="flex items-center gap-2 text-[11px] text-giz/50">
+                <User className="w-4 h-4 text-capim-light shrink-0" />
                 <span>Votações & MVP</span>
               </div>
             </div>

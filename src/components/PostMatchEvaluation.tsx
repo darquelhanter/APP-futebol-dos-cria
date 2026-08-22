@@ -56,12 +56,12 @@ export const PostMatchEvaluation: React.FC<PostMatchEvaluationProps> = ({
 
   if (!pelada) {
     return (
-      <div className="rounded-3xl bg-slate-900 border border-slate-800 p-8 sm:p-12 text-center max-w-xl mx-auto my-8 shadow-2xl">
-        <Award className="w-16 h-16 text-emerald-400 mx-auto mb-4" />
-        <h2 className="text-2xl font-black text-white font-['Teko',sans-serif] uppercase tracking-wider text-3xl">
+      <div className="rounded-3xl bg-gramado-card border border-gramado-light p-8 sm:p-12 text-center max-w-xl mx-auto my-8 shadow-2xl">
+        <Award className="w-16 h-16 text-capim-light mx-auto mb-4" />
+        <h2 className="text-2xl font-black text-giz font-['Teko',sans-serif] uppercase tracking-wider text-3xl">
           Nenhuma Pelada para Avaliação
         </h2>
-        <p className="text-xs sm:text-sm text-slate-300 mt-2 mb-4">
+        <p className="text-xs sm:text-sm text-giz/70 mt-2 mb-4">
           Crie ou finalize uma pelada para votar no MVP, Bagre da rodada e dar notas aos atletas.
         </p>
       </div>
@@ -215,21 +215,21 @@ export const PostMatchEvaluation: React.FC<PostMatchEvaluationProps> = ({
   return (
     <div className="space-y-6">
       {/* Top Banner: Voting Status & Resenha sharing */}
-      <div className="bg-gradient-to-r from-slate-900 via-slate-900/95 to-slate-950 p-6 rounded-3xl border border-slate-800 shadow-xl flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+      <div className="bg-gradient-to-r from-gramado-card via-gramado-card/95 to-gramado p-6 rounded-3xl border border-gramado-light shadow-xl flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2 mb-1">
             <span className="text-xs font-black uppercase tracking-wider text-amber-400 bg-amber-500/10 px-2.5 py-0.5 rounded-full border border-amber-500/30">
               Votação Pós-Jogo
             </span>
-            <span className="text-xs text-slate-400">
+            <span className="text-xs text-giz/50">
               {pelada.evaluations?.length || 0} avaliações recebidas
             </span>
           </div>
-          <h2 className="text-xl sm:text-2xl font-black text-white flex items-center gap-2">
+          <h2 className="text-xl sm:text-2xl font-black text-giz flex items-center gap-2">
             <Star className="w-6 h-6 text-amber-400 fill-amber-400" />
             <span>Avaliação Individual & Resenha da Rodada</span>
           </h2>
-          <p className="text-xs text-slate-400 mt-1">
+          <p className="text-xs text-giz/50 mt-1">
             Dê notas de 1 a 10 para cada atleta e vote no Craque da Rodada e no Troféu Bagre!
           </p>
         </div>
@@ -237,7 +237,7 @@ export const PostMatchEvaluation: React.FC<PostMatchEvaluationProps> = ({
         <button
           id="btn-share-resenha-whatsapp"
           onClick={handleShareResenha}
-          className="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-2xl text-xs font-bold flex items-center gap-2 shadow-lg shadow-emerald-600/20 transition-all"
+          className="px-4 py-2.5 bg-capim hover:bg-capim text-giz rounded-2xl text-xs font-bold flex items-center gap-2 shadow-lg shadow-capim/20 transition-all"
         >
           <Share2 className="w-4 h-4" />
           Compartilhar Resenha no WhatsApp
@@ -249,50 +249,50 @@ export const PostMatchEvaluation: React.FC<PostMatchEvaluationProps> = ({
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           
           {/* MVP Craque da Rodada */}
-          <div className="bg-gradient-to-br from-amber-500/10 to-slate-900 border border-amber-500/30 p-4 rounded-2xl flex items-center gap-3">
+          <div className="bg-gradient-to-br from-amber-500/10 to-gramado-card border border-amber-500/30 p-4 rounded-2xl flex items-center gap-3">
             <div className="w-12 h-12 rounded-xl bg-amber-500/20 border border-amber-400/40 flex items-center justify-center text-2xl">
               👑
             </div>
             <div>
               <p className="text-[11px] font-bold text-amber-400 uppercase tracking-wider">Craque da Partida (MVP)</p>
-              <h4 className="text-base font-black text-white">
+              <h4 className="text-base font-black text-giz">
                 {sortedMvpCandidates[0]
                   ? playersMap.get(sortedMvpCandidates[0][0])?.nickname || playersMap.get(sortedMvpCandidates[0][0])?.name
                   : 'Em votação'}
               </h4>
-              <p className="text-[10px] text-slate-400">
+              <p className="text-[10px] text-giz/50">
                 {sortedMvpCandidates[0] ? `${sortedMvpCandidates[0][1]} voto(s)` : 'Aguardando votos'}
               </p>
             </div>
           </div>
 
           {/* Troféu Bagre da Rodada */}
-          <div className="bg-gradient-to-br from-rose-500/10 to-slate-900 border border-rose-500/30 p-4 rounded-2xl flex items-center gap-3">
+          <div className="bg-gradient-to-br from-rose-500/10 to-gramado-card border border-rose-500/30 p-4 rounded-2xl flex items-center gap-3">
             <div className="w-12 h-12 rounded-xl bg-rose-500/20 border border-rose-400/40 flex items-center justify-center text-2xl">
               🐟
             </div>
             <div>
               <p className="text-[11px] font-bold text-rose-400 uppercase tracking-wider">Troféu Bagre da Rodada</p>
-              <h4 className="text-base font-black text-white">
+              <h4 className="text-base font-black text-giz">
                 {sortedBagreCandidates[0]
                   ? playersMap.get(sortedBagreCandidates[0][0])?.nickname || playersMap.get(sortedBagreCandidates[0][0])?.name
                   : 'Em votação'}
               </h4>
-              <p className="text-[10px] text-slate-400">
+              <p className="text-[10px] text-giz/50">
                 {sortedBagreCandidates[0] ? `${sortedBagreCandidates[0][1]} voto(s)` : 'Aguardando votos'}
               </p>
             </div>
           </div>
 
           {/* Votos Registrados */}
-          <div className="bg-gradient-to-br from-indigo-500/10 to-slate-900 border border-indigo-500/30 p-4 rounded-2xl flex items-center gap-3">
-            <div className="w-12 h-12 rounded-xl bg-indigo-500/20 border border-indigo-400/40 flex items-center justify-center text-2xl">
+          <div className="bg-gradient-to-br from-barro/10 to-gramado-card border border-barro/30 p-4 rounded-2xl flex items-center gap-3">
+            <div className="w-12 h-12 rounded-xl bg-barro/20 border border-barro/40 flex items-center justify-center text-2xl">
               📝
             </div>
             <div>
-              <p className="text-[11px] font-bold text-indigo-400 uppercase tracking-wider">Participação na Votação</p>
-              <h4 className="text-base font-black text-white">{pelada.evaluations.length} Votos</h4>
-              <p className="text-[10px] text-slate-400">Votantes: {pelada.evaluations.map(e => e.voterName).join(', ')}</p>
+              <p className="text-[11px] font-bold text-barro uppercase tracking-wider">Participação na Votação</p>
+              <h4 className="text-base font-black text-giz">{pelada.evaluations.length} Votos</h4>
+              <p className="text-[10px] text-giz/50">Votantes: {pelada.evaluations.map(e => e.voterName).join(', ')}</p>
             </div>
           </div>
         </div>
@@ -302,27 +302,27 @@ export const PostMatchEvaluation: React.FC<PostMatchEvaluationProps> = ({
       <form onSubmit={handleSubmitEvaluation} className="space-y-6">
         
         {/* Voter Identity & Match Notes Box */}
-        <div className="bg-slate-900/90 p-5 rounded-3xl border border-slate-800 space-y-4">
-          <h3 className="text-base font-black text-white flex items-center gap-2">
-            <MessageSquare className="w-5 h-5 text-emerald-400" />
+        <div className="bg-gramado-card/90 p-5 rounded-3xl border border-gramado-light space-y-4">
+          <h3 className="text-base font-black text-giz flex items-center gap-2">
+            <MessageSquare className="w-5 h-5 text-capim-light" />
             Identificação do Avaliador & Resenha Geral
           </h3>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
             <div>
-              <label className="text-slate-300 font-bold block mb-1">Seu Nome / Apelido</label>
+              <label className="text-giz/70 font-bold block mb-1">Seu Nome / Apelido</label>
               <input
                 type="text"
                 required
                 value={voterName}
                 onChange={(e) => setVoterName(e.target.value)}
                 placeholder="Ex: Paulinho Trator / Convidado"
-                className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-emerald-500"
+                className="w-full bg-gramado border border-giz/15 rounded-xl px-3 py-2 text-giz focus:outline-none focus:border-capim"
               />
             </div>
 
             <div>
-              <label className="text-slate-300 font-bold block mb-1">Ou selecione seu Jogador</label>
+              <label className="text-giz/70 font-bold block mb-1">Ou selecione seu Jogador</label>
               <select
                 value={selectedVoterPlayerId}
                 onChange={(e) => {
@@ -330,7 +330,7 @@ export const PostMatchEvaluation: React.FC<PostMatchEvaluationProps> = ({
                   const p = playersMap.get(e.target.value);
                   if (p) setVoterName(p.nickname || p.name);
                 }}
-                className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-emerald-500"
+                className="w-full bg-gramado border border-giz/15 rounded-xl px-3 py-2 text-giz focus:outline-none focus:border-capim"
               >
                 <option value="">Avaliador Avulso / Espectador</option>
                 {allPlayers.map((p) => (
@@ -342,7 +342,7 @@ export const PostMatchEvaluation: React.FC<PostMatchEvaluationProps> = ({
             </div>
 
             <div className="sm:col-span-2">
-              <label className="text-slate-300 font-bold block mb-1">
+              <label className="text-giz/70 font-bold block mb-1">
                 Resenha do Jogo (Comentário Geral da Pelada)
               </label>
               <textarea
@@ -350,15 +350,15 @@ export const PostMatchEvaluation: React.FC<PostMatchEvaluationProps> = ({
                 value={resenhaText}
                 onChange={(e) => setResenhaText(e.target.value)}
                 placeholder="Ex: Jogo muito equilibrado! Destaque pro Digão que fechou o gol e Cadu que mandou no meio..."
-                className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-emerald-500 text-xs"
+                className="w-full bg-gramado border border-giz/15 rounded-xl px-3 py-2 text-giz focus:outline-none focus:border-capim text-xs"
               />
             </div>
           </div>
         </div>
 
         {/* Individual Player Score Sliders & Tags */}
-        <div className="bg-slate-900/90 p-5 rounded-3xl border border-slate-800 space-y-4">
-          <h3 className="text-base font-black text-white flex items-center gap-2">
+        <div className="bg-gramado-card/90 p-5 rounded-3xl border border-gramado-light space-y-4">
+          <h3 className="text-base font-black text-giz flex items-center gap-2">
             <Star className="w-5 h-5 text-amber-400" />
             Notas Individuais dos Atletas (1.0 a 10.0)
           </h3>
@@ -371,7 +371,7 @@ export const PostMatchEvaluation: React.FC<PostMatchEvaluationProps> = ({
                 <div
                   key={p.id}
                   id={`eval-player-${p.id}`}
-                  className="bg-slate-950/80 p-4 rounded-2xl border border-slate-800/90 space-y-3"
+                  className="bg-gramado/80 p-4 rounded-2xl border border-gramado-light/90 space-y-3"
                 >
                   <div className="flex items-center justify-between">
                     <div
@@ -382,19 +382,19 @@ export const PostMatchEvaluation: React.FC<PostMatchEvaluationProps> = ({
                         src={p.photoUrl}
                         alt={p.name}
                         referrerPolicy="no-referrer"
-                        className="w-10 h-10 rounded-xl object-cover border border-slate-700"
+                        className="w-10 h-10 rounded-xl object-cover border border-giz/15"
                       />
                       <div>
-                        <h4 className="text-sm font-bold text-white hover:text-emerald-400 transition-colors">
+                        <h4 className="text-sm font-bold text-giz hover:text-capim-light transition-colors">
                           {p.nickname || p.name}
                         </h4>
-                        <p className="text-[10px] text-slate-400">
+                        <p className="text-[10px] text-giz/50">
                           {p.position} • OVR {p.overall} • {p.goals} gols • {p.assists} assistências
                         </p>
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-1 bg-slate-900 px-3 py-1 rounded-xl border border-slate-700">
+                    <div className="flex items-center gap-1 bg-gramado-card px-3 py-1 rounded-xl border border-giz/15">
                       <span className="text-amber-400 font-bold text-xs">⭐</span>
                       <span className="text-base font-black text-amber-300 font-mono">
                         {currentRating.score.toFixed(1)}
@@ -411,9 +411,9 @@ export const PostMatchEvaluation: React.FC<PostMatchEvaluationProps> = ({
                       step="0.5"
                       value={currentRating.score}
                       onChange={(e) => handleScoreChange(p.id, parseFloat(e.target.value))}
-                      className="w-full accent-amber-400 h-2 bg-slate-800 rounded-lg cursor-pointer"
+                      className="w-full accent-amber-400 h-2 bg-gramado-light rounded-lg cursor-pointer"
                     />
-                    <div className="flex justify-between text-[9px] text-slate-500 font-bold px-1 mt-0.5">
+                    <div className="flex justify-between text-[9px] text-giz/35 font-bold px-1 mt-0.5">
                       <span>1.0 (Péssimo)</span>
                       <span>5.0 (Regular)</span>
                       <span>8.0 (Bom)</span>
@@ -423,7 +423,7 @@ export const PostMatchEvaluation: React.FC<PostMatchEvaluationProps> = ({
 
                   {/* Quick Tags */}
                   <div>
-                    <p className="text-[10px] font-bold text-slate-400 mb-1.5">Selos / Tags da Rodada:</p>
+                    <p className="text-[10px] font-bold text-giz/50 mb-1.5">Selos / Tags da Rodada:</p>
                     <div className="flex flex-wrap gap-1">
                       {AVAILABLE_TAGS.map((tag) => {
                         const isSelected = currentRating.tags.includes(tag);
@@ -435,7 +435,7 @@ export const PostMatchEvaluation: React.FC<PostMatchEvaluationProps> = ({
                             className={`text-[10px] font-bold px-2 py-0.5 rounded-lg border transition-all ${
                               isSelected
                                 ? 'bg-amber-500/20 text-amber-300 border-amber-500/50'
-                                : 'bg-slate-900 text-slate-400 border-slate-800 hover:text-slate-200'
+                                : 'bg-gramado-card text-giz/50 border-gramado-light hover:text-giz/85'
                             }`}
                           >
                             {tag}
@@ -451,7 +451,7 @@ export const PostMatchEvaluation: React.FC<PostMatchEvaluationProps> = ({
                     value={currentRating.comment}
                     onChange={(e) => handleCommentChange(p.id, e.target.value)}
                     placeholder="Comentário sobre a atuação (opcional)..."
-                    className="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-1.5 text-xs text-white focus:outline-none focus:border-emerald-500"
+                    className="w-full bg-gramado-card border border-gramado-light rounded-xl px-3 py-1.5 text-xs text-giz focus:outline-none focus:border-capim"
                   />
                 </div>
               );
@@ -460,8 +460,8 @@ export const PostMatchEvaluation: React.FC<PostMatchEvaluationProps> = ({
         </div>
 
         {/* Awards Voting: Craque, Bagre e Melhor Gol */}
-        <div className="bg-slate-900/90 p-5 rounded-3xl border border-slate-800 space-y-4">
-          <h3 className="text-base font-black text-white flex items-center gap-2">
+        <div className="bg-gramado-card/90 p-5 rounded-3xl border border-gramado-light space-y-4">
+          <h3 className="text-base font-black text-giz flex items-center gap-2">
             <Trophy className="w-5 h-5 text-amber-400" />
             Eleição dos Destaques da Rodada
           </h3>
@@ -474,7 +474,7 @@ export const PostMatchEvaluation: React.FC<PostMatchEvaluationProps> = ({
               <select
                 value={mvpVoteId}
                 onChange={(e) => setMvpVoteId(e.target.value)}
-                className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-amber-500 font-bold"
+                className="w-full bg-gramado border border-giz/15 rounded-xl px-3 py-2 text-giz focus:outline-none focus:border-amber-500 font-bold"
               >
                 <option value="">Selecione o Craque...</option>
                 {participatedPlayers.map((p) => (
@@ -492,7 +492,7 @@ export const PostMatchEvaluation: React.FC<PostMatchEvaluationProps> = ({
               <select
                 value={bagreVoteId}
                 onChange={(e) => setBagreVoteId(e.target.value)}
-                className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-rose-500 font-bold"
+                className="w-full bg-gramado border border-giz/15 rounded-xl px-3 py-2 text-giz focus:outline-none focus:border-rose-500 font-bold"
               >
                 <option value="">Selecione o Bagre...</option>
                 {participatedPlayers.map((p) => (
@@ -504,13 +504,13 @@ export const PostMatchEvaluation: React.FC<PostMatchEvaluationProps> = ({
             </div>
 
             <div>
-              <label className="text-emerald-300 font-black block mb-1 flex items-center gap-1.5">
+              <label className="text-capim-light font-black block mb-1 flex items-center gap-1.5">
                 🚀 Melhor Gol da Rodada
               </label>
               <select
                 value={bestGoalPlayerId}
                 onChange={(e) => setBestGoalPlayerId(e.target.value)}
-                className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-emerald-500 font-bold"
+                className="w-full bg-gramado border border-giz/15 rounded-xl px-3 py-2 text-giz focus:outline-none focus:border-capim font-bold"
               >
                 <option value="">Selecione o autor...</option>
                 {participatedPlayers.map((p) => (
@@ -527,7 +527,7 @@ export const PostMatchEvaluation: React.FC<PostMatchEvaluationProps> = ({
               type="submit"
               id="btn-submit-evaluation"
               disabled={isSubmitting}
-              className="px-6 py-3 bg-gradient-to-r from-amber-500 to-yellow-400 hover:from-amber-400 hover:to-yellow-300 text-slate-950 font-black rounded-2xl text-sm flex items-center gap-2 shadow-xl shadow-amber-500/20 transition-all active:scale-95"
+              className="px-6 py-3 bg-gradient-to-r from-amber-500 to-yellow-400 hover:from-amber-400 hover:to-yellow-300 text-gramado font-black rounded-2xl text-sm flex items-center gap-2 shadow-xl shadow-amber-500/20 transition-all active:scale-95"
             >
               <Sparkles className="w-4 h-4" />
               Enviar Avaliação & Atualizar Ranking

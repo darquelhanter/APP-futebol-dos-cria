@@ -9,11 +9,6 @@ import { User as FirebaseUser } from 'firebase/auth';
 export function isPeladaCreator(pelada: Pelada | null | undefined, currentUser: FirebaseUser | null): boolean {
   if (!currentUser) return false;
   if (!pelada) return true; // If no pelada created yet, authenticated user can create one
-  
-  // If pelada has no creator recorded yet, the active user becomes the creator
-  if (!pelada.creatorUid && !pelada.creatorEmail) {
-    return true;
-  }
 
   const matchesUid = !!pelada.creatorUid && pelada.creatorUid === currentUser.uid;
   const matchesEmail = !!pelada.creatorEmail && !!currentUser.email && 

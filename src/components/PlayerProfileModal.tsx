@@ -86,13 +86,13 @@ export const PlayerProfileModal: React.FC<PlayerProfileModalProps> = ({
     >
       <div
         id="player-profile-modal-content"
-        className="relative w-full max-w-2xl bg-slate-900 border border-slate-800 rounded-3xl overflow-hidden shadow-2xl my-8"
+        className="relative w-full max-w-2xl bg-gramado-card border border-gramado-light rounded-3xl overflow-hidden shadow-2xl my-8"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header background banner */}
-        <div className="h-32 bg-gradient-to-r from-emerald-950 via-slate-900 to-indigo-950 relative p-6 flex items-start justify-between border-b border-slate-800">
+        <div className="h-32 bg-gradient-to-r from-gramado-card via-gramado-card to-gramado-light relative p-6 flex items-start justify-between border-b border-gramado-light">
           <div className="flex items-center gap-2">
-            <span className="text-xs font-bold uppercase tracking-wider text-emerald-400 bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/30">
+            <span className="text-xs font-bold uppercase tracking-wider text-capim-light bg-capim/10 px-3 py-1 rounded-full border border-capim/30">
               Perfil do Cria
             </span>
           </div>
@@ -103,7 +103,7 @@ export const PlayerProfileModal: React.FC<PlayerProfileModalProps> = ({
               className={`p-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all ${
                 isEditing
                   ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40'
-                  : 'bg-slate-800/80 hover:bg-slate-700 text-slate-200 border border-slate-700'
+                  : 'bg-gramado-light/80 hover:bg-giz/15 text-giz/85 border border-giz/15'
               }`}
             >
               <Edit2 className="w-3.5 h-3.5" />
@@ -112,7 +112,7 @@ export const PlayerProfileModal: React.FC<PlayerProfileModalProps> = ({
             <button
               id="btn-close-player-modal"
               onClick={onClose}
-              className="p-2 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-300 transition-colors"
+              className="p-2 rounded-xl bg-gramado-light/80 hover:bg-giz/15 text-giz/70 transition-colors"
             >
               <X className="w-4 h-4" />
             </button>
@@ -129,23 +129,23 @@ export const PlayerProfileModal: React.FC<PlayerProfileModalProps> = ({
                   src={formData.photoUrl || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150'}
                   alt={formData.name}
                   referrerPolicy="no-referrer"
-                  className="w-24 h-24 rounded-2xl object-cover border-4 border-slate-900 shadow-xl"
+                  className="w-24 h-24 rounded-2xl object-cover border-4 border-gramado-card shadow-xl"
                 />
-                <span className="absolute -bottom-2 -right-2 bg-gradient-to-r from-amber-400 to-yellow-500 text-slate-950 font-black text-sm px-2 py-0.5 rounded-lg border border-yellow-300 shadow-md">
+                <span className="absolute -bottom-2 -right-2 bg-gradient-to-r from-amber-400 to-yellow-500 text-gramado font-black text-sm px-2 py-0.5 rounded-lg border border-yellow-300 shadow-md">
                   {formData.overall}
                 </span>
               </div>
               <div>
-                <h2 className="text-2xl font-black text-white">{formData.nickname || formData.name}</h2>
-                <p className="text-sm text-slate-400">{formData.name}</p>
+                <h2 className="text-2xl font-black text-giz">{formData.nickname || formData.name}</h2>
+                <p className="text-sm text-giz/50">{formData.name}</p>
                 <div className="flex items-center gap-2 mt-1">
-                  <span className="text-xs font-bold text-emerald-400 bg-emerald-500/10 px-2.5 py-0.5 rounded-md border border-emerald-500/30 capitalize">
+                  <span className="text-xs font-bold text-capim-light bg-capim/10 px-2.5 py-0.5 rounded-md border border-capim/30 capitalize">
                     {formData.type}
                   </span>
-                  <span className="text-xs font-bold text-slate-300 bg-slate-800 px-2.5 py-0.5 rounded-md border border-slate-700">
+                  <span className="text-xs font-bold text-giz/70 bg-gramado-light px-2.5 py-0.5 rounded-md border border-giz/15">
                     Posição: {formData.position}
                   </span>
-                  <span className="text-xs text-slate-400 capitalize">
+                  <span className="text-xs text-giz/50 capitalize">
                     Pé: {formData.dominantFoot}
                   </span>
                 </div>
@@ -162,7 +162,7 @@ export const PlayerProfileModal: React.FC<PlayerProfileModalProps> = ({
                     formData.phone
                   )
                 }
-                className="w-full sm:w-auto px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-xl flex items-center justify-center gap-2 shadow-lg transition-colors"
+                className="w-full sm:w-auto px-4 py-2 bg-capim hover:bg-capim text-giz text-xs font-bold rounded-xl flex items-center justify-center gap-2 shadow-lg transition-colors"
               >
                 <MessageSquare className="w-4 h-4" />
                 Conversar no WhatsApp
@@ -172,36 +172,36 @@ export const PlayerProfileModal: React.FC<PlayerProfileModalProps> = ({
 
           {/* Form edit mode vs Normal View */}
           {isEditing ? (
-            <div className="space-y-4 bg-slate-950/60 p-5 rounded-2xl border border-slate-800">
-              <h4 className="text-sm font-extrabold text-white flex items-center gap-2">
-                <Edit2 className="w-4 h-4 text-emerald-400" /> Editar Dados do Jogador
+            <div className="space-y-4 bg-gramado/60 p-5 rounded-2xl border border-gramado-light">
+              <h4 className="text-sm font-extrabold text-giz flex items-center gap-2">
+                <Edit2 className="w-4 h-4 text-capim-light" /> Editar Dados do Jogador
               </h4>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
                 <div>
-                  <label className="text-slate-400 font-bold block mb-1">Nome Completo</label>
+                  <label className="text-giz/50 font-bold block mb-1">Nome Completo</label>
                   <input
                     type="text"
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-emerald-500"
+                    className="w-full bg-gramado-card border border-giz/15 rounded-xl px-3 py-2 text-giz focus:outline-none focus:border-capim"
                   />
                 </div>
                 <div>
-                  <label className="text-slate-400 font-bold block mb-1">Apelido na Pelada</label>
+                  <label className="text-giz/50 font-bold block mb-1">Apelido na Pelada</label>
                   <input
                     type="text"
                     value={formData.nickname}
                     onChange={(e) => setFormData({ ...formData, nickname: e.target.value })}
-                    className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-emerald-500"
+                    className="w-full bg-gramado-card border border-giz/15 rounded-xl px-3 py-2 text-giz focus:outline-none focus:border-capim"
                   />
                 </div>
                 <div>
-                  <label className="text-slate-400 font-bold block mb-1">Posição</label>
+                  <label className="text-giz/50 font-bold block mb-1">Posição</label>
                   <select
                     value={formData.position}
                     onChange={(e) => setFormData({ ...formData, position: e.target.value as PlayerPosition })}
-                    className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-emerald-500"
+                    className="w-full bg-gramado-card border border-giz/15 rounded-xl px-3 py-2 text-giz focus:outline-none focus:border-capim"
                   >
                     <option value="GK">Goleiro (GK)</option>
                     <option value="DEF">Zagueiro / Lateral (DEF)</option>
@@ -210,22 +210,22 @@ export const PlayerProfileModal: React.FC<PlayerProfileModalProps> = ({
                   </select>
                 </div>
                 <div>
-                  <label className="text-slate-400 font-bold block mb-1">Tipo de Membro</label>
+                  <label className="text-giz/50 font-bold block mb-1">Tipo de Membro</label>
                   <select
                     value={formData.type}
                     onChange={(e) => setFormData({ ...formData, type: e.target.value as PlayerType })}
-                    className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-emerald-500"
+                    className="w-full bg-gramado-card border border-giz/15 rounded-xl px-3 py-2 text-giz focus:outline-none focus:border-capim"
                   >
                     <option value="mensalista">Mensalista</option>
                     <option value="diarista">Diarista / Avulso</option>
                   </select>
                 </div>
                 <div>
-                  <label className="text-slate-400 font-bold block mb-1">Pé Dominante</label>
+                  <label className="text-giz/50 font-bold block mb-1">Pé Dominante</label>
                   <select
                     value={formData.dominantFoot}
                     onChange={(e) => setFormData({ ...formData, dominantFoot: e.target.value as Foot })}
-                    className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-emerald-500"
+                    className="w-full bg-gramado-card border border-giz/15 rounded-xl px-3 py-2 text-giz focus:outline-none focus:border-capim"
                   >
                     <option value="destro">Destro</option>
                     <option value="canhoto">Canhoto</option>
@@ -233,29 +233,29 @@ export const PlayerProfileModal: React.FC<PlayerProfileModalProps> = ({
                   </select>
                 </div>
                 <div>
-                  <label className="text-slate-400 font-bold block mb-1">Telefone WhatsApp</label>
+                  <label className="text-giz/50 font-bold block mb-1">Telefone WhatsApp</label>
                   <input
                     type="text"
                     value={formData.phone}
                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                     placeholder="(11) 99999-9999"
-                    className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-emerald-500"
+                    className="w-full bg-gramado-card border border-giz/15 rounded-xl px-3 py-2 text-giz focus:outline-none focus:border-capim"
                   />
                 </div>
                 <div className="sm:col-span-2">
-                  <label className="text-slate-400 font-bold block mb-1">URL da Foto (Avatar)</label>
+                  <label className="text-giz/50 font-bold block mb-1">URL da Foto (Avatar)</label>
                   <input
                     type="text"
                     value={formData.photoUrl}
                     onChange={(e) => setFormData({ ...formData, photoUrl: e.target.value })}
-                    className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-emerald-500"
+                    className="w-full bg-gramado-card border border-giz/15 rounded-xl px-3 py-2 text-giz focus:outline-none focus:border-capim"
                   />
                 </div>
               </div>
 
               {/* Attributes sliders */}
-              <div className="pt-3 border-t border-slate-800">
-                <p className="text-xs font-bold text-slate-300 mb-3">Atributos FIFA (0 a 99):</p>
+              <div className="pt-3 border-t border-gramado-light">
+                <p className="text-xs font-bold text-giz/70 mb-3">Atributos FIFA (0 a 99):</p>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 text-xs">
                   {[
                     { label: 'Velocidade (PAC)', key: 'pace' },
@@ -266,9 +266,9 @@ export const PlayerProfileModal: React.FC<PlayerProfileModalProps> = ({
                     { label: 'Físico (PHY)', key: 'physical' },
                   ].map((attr) => (
                     <div key={attr.key}>
-                      <div className="flex justify-between text-slate-300 font-bold mb-1">
+                      <div className="flex justify-between text-giz/70 font-bold mb-1">
                         <span>{attr.label}</span>
-                        <span className="text-emerald-400 font-black">
+                        <span className="text-capim-light font-black">
                           {formData[attr.key as keyof Player] as number}
                         </span>
                       </div>
@@ -283,7 +283,7 @@ export const PlayerProfileModal: React.FC<PlayerProfileModalProps> = ({
                             [attr.key]: parseInt(e.target.value, 10),
                           })
                         }
-                        className="w-full accent-emerald-500 h-1.5 bg-slate-800 rounded-lg cursor-pointer"
+                        className="w-full accent-capim h-1.5 bg-gramado-light rounded-lg cursor-pointer"
                       />
                     </div>
                   ))}
@@ -291,19 +291,19 @@ export const PlayerProfileModal: React.FC<PlayerProfileModalProps> = ({
               </div>
 
               {/* Badges edit */}
-              <div className="pt-3 border-t border-slate-800">
-                <p className="text-xs font-bold text-slate-300 mb-2">Conquistas & Badges:</p>
+              <div className="pt-3 border-t border-gramado-light">
+                <p className="text-xs font-bold text-giz/70 mb-2">Conquistas & Badges:</p>
                 <div className="flex flex-wrap gap-2 mb-2">
                   {formData.badges?.map((badge, idx) => (
                     <span
                       key={idx}
-                      className="text-xs bg-slate-800 border border-slate-700 text-slate-200 px-2.5 py-1 rounded-lg flex items-center gap-1.5"
+                      className="text-xs bg-gramado-light border border-giz/15 text-giz/85 px-2.5 py-1 rounded-lg flex items-center gap-1.5"
                     >
                       {badge}
                       <button
                         type="button"
                         onClick={() => handleRemoveBadge(idx)}
-                        className="hover:text-rose-400 text-slate-400"
+                        className="hover:text-rose-400 text-giz/50"
                       >
                         <X className="w-3 h-3" />
                       </button>
@@ -316,12 +316,12 @@ export const PlayerProfileModal: React.FC<PlayerProfileModalProps> = ({
                     value={newBadge}
                     onChange={(e) => setNewBadge(e.target.value)}
                     placeholder="Nova tag (Ex: Chuteira de Ouro)"
-                    className="flex-1 bg-slate-900 border border-slate-700 rounded-xl px-3 py-1.5 text-xs text-white focus:outline-none focus:border-emerald-500"
+                    className="flex-1 bg-gramado-card border border-giz/15 rounded-xl px-3 py-1.5 text-xs text-giz focus:outline-none focus:border-capim"
                   />
                   <button
                     type="button"
                     onClick={handleAddBadge}
-                    className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold rounded-xl border border-slate-700"
+                    className="px-3 py-1.5 bg-gramado-light hover:bg-giz/15 text-giz text-xs font-bold rounded-xl border border-giz/15"
                   >
                     Adicionar
                   </button>
@@ -329,7 +329,7 @@ export const PlayerProfileModal: React.FC<PlayerProfileModalProps> = ({
               </div>
 
               {/* Action buttons */}
-              <div className="flex items-center justify-between pt-4 border-t border-slate-800">
+              <div className="flex items-center justify-between pt-4 border-t border-gramado-light">
                 {onDeletePlayer && (
                   <button
                     type="button"
@@ -338,7 +338,7 @@ export const PlayerProfileModal: React.FC<PlayerProfileModalProps> = ({
                     className={`px-3 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-colors ${
                       isCreator
                         ? 'bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/30'
-                        : 'bg-slate-800/60 text-slate-500 border border-slate-700 cursor-not-allowed'
+                        : 'bg-gramado-light/60 text-giz/35 border border-giz/15 cursor-not-allowed'
                     }`}
                     title={
                       isCreator
@@ -348,14 +348,14 @@ export const PlayerProfileModal: React.FC<PlayerProfileModalProps> = ({
                   >
                     <Trash2 className="w-3.5 h-3.5" />
                     <span>Excluir Jogador</span>
-                    {!isCreator && <span className="text-[10px] text-slate-500">(Restrito ao Criador)</span>}
+                    {!isCreator && <span className="text-[10px] text-giz/35">(Restrito ao Criador)</span>}
                   </button>
                 )}
                 <div className="flex items-center gap-2 ml-auto">
                   <button
                     type="button"
                     onClick={() => setIsEditing(false)}
-                    className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-bold transition-colors"
+                    className="px-4 py-2 bg-gramado-light hover:bg-giz/15 text-giz/70 rounded-xl text-xs font-bold transition-colors"
                   >
                     Cancelar
                   </button>
@@ -363,7 +363,7 @@ export const PlayerProfileModal: React.FC<PlayerProfileModalProps> = ({
                     type="button"
                     id="btn-save-player"
                     onClick={handleSave}
-                    className="px-5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-lg shadow-emerald-600/30 transition-colors"
+                    className="px-5 py-2 bg-capim hover:bg-capim text-giz rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-lg shadow-capim/30 transition-colors"
                   >
                     <Save className="w-3.5 h-3.5" /> Salvar Alterações
                   </button>
@@ -374,35 +374,35 @@ export const PlayerProfileModal: React.FC<PlayerProfileModalProps> = ({
             <div className="space-y-6">
               {/* Career Stats Grid */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                <div className="bg-slate-950/80 p-3.5 rounded-2xl border border-slate-800 text-center">
-                  <p className="text-xs text-slate-400 font-bold mb-1">Partidas</p>
-                  <p className="text-xl font-black text-white">{player.matchesCount}</p>
-                  <p className="text-[10px] text-emerald-400 mt-0.5">
+                <div className="bg-gramado/80 p-3.5 rounded-2xl border border-gramado-light text-center">
+                  <p className="text-xs text-giz/50 font-bold mb-1">Partidas</p>
+                  <p className="text-xl font-black text-giz">{player.matchesCount}</p>
+                  <p className="text-[10px] text-capim-light mt-0.5">
                     {player.wins}V • {player.draws}E • {player.losses}D
                   </p>
                 </div>
-                <div className="bg-slate-950/80 p-3.5 rounded-2xl border border-slate-800 text-center">
-                  <p className="text-xs text-slate-400 font-bold mb-1">Gols / Assists</p>
-                  <p className="text-xl font-black text-emerald-400">
-                    {player.goals} <span className="text-slate-500 text-sm">/</span> {player.assists}
+                <div className="bg-gramado/80 p-3.5 rounded-2xl border border-gramado-light text-center">
+                  <p className="text-xs text-giz/50 font-bold mb-1">Gols / Assists</p>
+                  <p className="text-xl font-black text-capim-light">
+                    {player.goals} <span className="text-giz/35 text-sm">/</span> {player.assists}
                   </p>
-                  <p className="text-[10px] text-slate-400 mt-0.5">
+                  <p className="text-[10px] text-giz/50 mt-0.5">
                     {((player.goals + player.assists) / Math.max(1, player.matchesCount)).toFixed(2)} part./jogo
                   </p>
                 </div>
-                <div className="bg-slate-950/80 p-3.5 rounded-2xl border border-slate-800 text-center">
-                  <p className="text-xs text-slate-400 font-bold mb-1">Nota Média</p>
+                <div className="bg-gramado/80 p-3.5 rounded-2xl border border-gramado-light text-center">
+                  <p className="text-xs text-giz/50 font-bold mb-1">Nota Média</p>
                   <div className="flex items-center justify-center gap-1">
                     <span className="text-amber-400">⭐</span>
                     <span className="text-xl font-black text-amber-300">
                       {player.averageRating > 0 ? player.averageRating.toFixed(1) : '-'}
                     </span>
                   </div>
-                  <p className="text-[10px] text-slate-400 mt-0.5">{player.ratingsCount} avaliações</p>
+                  <p className="text-[10px] text-giz/50 mt-0.5">{player.ratingsCount} avaliações</p>
                 </div>
-                <div className="bg-slate-950/80 p-3.5 rounded-2xl border border-slate-800 text-center">
-                  <p className="text-xs text-slate-400 font-bold mb-1">Premiações</p>
-                  <p className="text-xl font-black text-white flex items-center justify-center gap-2">
+                <div className="bg-gramado/80 p-3.5 rounded-2xl border border-gramado-light text-center">
+                  <p className="text-xs text-giz/50 font-bold mb-1">Premiações</p>
+                  <p className="text-xl font-black text-giz flex items-center justify-center gap-2">
                     <span className="text-amber-400" title="Craque da Rodada (MVP)">
                       👑 {player.mvpCount}
                     </span>
@@ -410,30 +410,30 @@ export const PlayerProfileModal: React.FC<PlayerProfileModalProps> = ({
                       🐟 {player.bagreCount}
                     </span>
                   </p>
-                  <p className="text-[10px] text-slate-400 mt-0.5">Craque vs Bagre</p>
+                  <p className="text-[10px] text-giz/50 mt-0.5">Craque vs Bagre</p>
                 </div>
               </div>
 
               {/* FIFA Attributes Progress Bars */}
-              <div className="bg-slate-950/80 p-5 rounded-2xl border border-slate-800">
-                <h4 className="text-xs font-black uppercase tracking-wider text-slate-400 mb-4 flex items-center gap-2">
+              <div className="bg-gramado/80 p-5 rounded-2xl border border-gramado-light">
+                <h4 className="text-xs font-black uppercase tracking-wider text-giz/50 mb-4 flex items-center gap-2">
                   <Zap className="w-4 h-4 text-amber-400" /> Atributos Técnicos & Físicos
                 </h4>
                 <div className="space-y-3">
                   {[
                     { label: 'Velocidade & Arrancada (PAC)', val: player.pace, color: 'bg-amber-500' },
                     { label: 'Finalização & Pontaria (SHO)', val: player.shoot, color: 'bg-rose-500' },
-                    { label: 'Passe & Visão de Jogo (PAS)', val: player.pass, color: 'bg-emerald-500' },
+                    { label: 'Passe & Visão de Jogo (PAS)', val: player.pass, color: 'bg-capim' },
                     { label: 'Drible & Controle de Bola (DRI)', val: player.dribble, color: 'bg-purple-500' },
                     { label: 'Desarme & Marcação (DEF)', val: player.def, color: 'bg-blue-500' },
-                    { label: 'Físico & Resistência (PHY)', val: player.physical, color: 'bg-teal-500' },
+                    { label: 'Físico & Resistência (PHY)', val: player.physical, color: 'bg-barro' },
                   ].map((attr) => (
                     <div key={attr.label}>
                       <div className="flex justify-between text-xs font-bold mb-1">
-                        <span className="text-slate-300">{attr.label}</span>
-                        <span className="text-white font-extrabold">{attr.val}</span>
+                        <span className="text-giz/70">{attr.label}</span>
+                        <span className="text-giz font-extrabold">{attr.val}</span>
                       </div>
-                      <div className="h-2 w-full bg-slate-800 rounded-full overflow-hidden">
+                      <div className="h-2 w-full bg-gramado-light rounded-full overflow-hidden">
                         <div
                           className={`h-full ${attr.color} rounded-full transition-all duration-500`}
                           style={{ width: `${attr.val}%` }}
@@ -446,17 +446,17 @@ export const PlayerProfileModal: React.FC<PlayerProfileModalProps> = ({
 
               {/* Badges & Tags */}
               {player.badges && player.badges.length > 0 && (
-                <div className="bg-slate-950/80 p-4 rounded-2xl border border-slate-800">
-                  <h4 className="text-xs font-black uppercase tracking-wider text-slate-400 mb-2.5 flex items-center gap-2">
-                    <Award className="w-4 h-4 text-emerald-400" /> Conquistas da Pelada
+                <div className="bg-gramado/80 p-4 rounded-2xl border border-gramado-light">
+                  <h4 className="text-xs font-black uppercase tracking-wider text-giz/50 mb-2.5 flex items-center gap-2">
+                    <Award className="w-4 h-4 text-capim-light" /> Conquistas da Pelada
                   </h4>
                   <div className="flex flex-wrap gap-2">
                     {player.badges.map((b, i) => (
                       <span
                         key={i}
-                        className="text-xs font-extrabold px-3 py-1 rounded-xl bg-gradient-to-r from-emerald-950 to-slate-900 border border-emerald-500/30 text-emerald-300 flex items-center gap-1.5 shadow-sm"
+                        className="text-xs font-extrabold px-3 py-1 rounded-xl bg-gradient-to-r from-gramado-card to-gramado-card border border-capim/30 text-capim-light flex items-center gap-1.5 shadow-sm"
                       >
-                        <Sparkles className="w-3 h-3 text-emerald-400" />
+                        <Sparkles className="w-3 h-3 text-capim-light" />
                         {b}
                       </span>
                     ))}
