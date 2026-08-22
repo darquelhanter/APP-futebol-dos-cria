@@ -53,8 +53,12 @@ export const AuthModal: React.FC<AuthModalProps> = ({
     }
   };
 
+  // Matched only by uid/email — matching by display name would treat this
+  // account as already owning someone else's card just because the name matches.
   const existingPlayer = players.find(
-    (p) => p.name.toLowerCase() === currentUser?.displayName?.toLowerCase()
+    (p) =>
+      (currentUser?.uid && p.userId === currentUser.uid) ||
+      (currentUser?.email && p.userEmail === currentUser.email)
   );
 
   const handleCreateOrLinkPlayer = () => {
@@ -62,6 +66,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({
 
     const newPlayer: Player = {
       id: `player-google-${currentUser.uid.slice(0, 8)}`,
+      userId: currentUser.uid,
+      userEmail: currentUser.email || undefined,
       name: currentUser.displayName || 'Jogador Google',
       nickname: currentUser.displayName?.split(' ')[0] || 'Cria',
       photoUrl: currentUser.photoURL || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300',

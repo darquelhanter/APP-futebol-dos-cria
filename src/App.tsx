@@ -22,6 +22,7 @@ import {
   subscribeToCloudPeladas,
   subscribeToCloudPlayers,
   clearCloudData,
+  logoutUser,
 } from './lib/firebase';
 import { User as FirebaseUser } from 'firebase/auth';
 
@@ -54,6 +55,7 @@ import {
   RefreshCw,
   Edit3,
   Crown,
+  LogOut,
 } from 'lucide-react';
 
 // Components
@@ -570,6 +572,20 @@ export const App: React.FC = () => {
                     <Cloud className="w-2.5 h-2.5" /> Sincronizado
                   </div>
                 </div>
+              </button>
+
+              {/* Sign Out Button */}
+              <button
+                id="header-btn-logout"
+                onClick={() => {
+                  if (window.confirm('Deseja realmente sair da sua conta?')) {
+                    logoutUser();
+                  }
+                }}
+                className="p-2 sm:p-2.5 rounded-xl sm:rounded-2xl bg-gramado-card hover:bg-red-500/20 border border-giz/10 hover:border-red-500/40 text-giz/50 hover:text-red-400 transition-colors"
+                title="Sair da conta"
+              >
+                <LogOut className="w-4 h-4 sm:w-5 sm:h-5" />
               </button>
 
               {/* Privileges & Access Control Button */}
