@@ -21,6 +21,7 @@ import {
   syncPlayersToCloud,
   subscribeToCloudPeladas,
   subscribeToCloudPlayers,
+  deletePlayerProfileFromCloud,
   clearCloudData,
   logoutUser,
 } from './lib/firebase';
@@ -122,6 +123,14 @@ export const App: React.FC = () => {
   const isApplyingRemotePeladas = useRef(false);
   const hasWipedMockData = useRef(false);
 
+  // The whole roster lives in a single Firestore document (players is one
+  // array field), so writing it before we've actually seen what's already
+  // there would silently replace everyone else's cards with whatever this
+  // device had loaded so far. Block writes until the first real snapshot
+  // arrives, and fold in any player created locally in that brief window
+  // instead of discarding it.
+  const hasReceivedCloudPlayers = useRef(false);
+
   const wipeMockData = async () => {
     if (hasWipedMockData.current) return;
     hasWipedMockData.current = true;
@@ -148,6 +157,7 @@ export const App: React.FC = () => {
       unsubscribePlayers?.();
       unsubscribePeladas = undefined;
       unsubscribePlayers = undefined;
+      hasReceivedCloudPlayers.current = false;
 
       if (user) {
         setIsCloudSynced(true);
@@ -158,6 +168,24 @@ export const App: React.FC = () => {
             wipeMockData();
             return;
           }
+
+          if (!hasReceivedCloudPlayers.current) {
+            hasReceivedCloudPlayers.current = true;
+            // Merge in anything created locally before this first snapshot
+            // landed (e.g. a profile saved in the first second after login),
+            // instead of either discarding it or letting it wipe the cloud.
+            setPlayers((prevLocal) => {
+              const cloudIds = new Set(cloudPlayers.map((p) => p.id));
+              const localOnly = prevLocal.filter((p) => !cloudIds.has(p.id));
+              const merged = [...cloudPlayers, ...localOnly];
+              if (localOnly.length === 0) {
+                isApplyingRemotePlayers.current = true;
+              }
+              return merged;
+            });
+            return;
+          }
+
           isApplyingRemotePlayers.current = true;
           setPlayers(cloudPlayers);
         });
@@ -213,7 +241,7 @@ export const App: React.FC = () => {
       isApplyingRemotePlayers.current = false;
       return;
     }
-    if (currentUser && players.length > 0) {
+    if (currentUser && players.length > 0 && hasReceivedCloudPlayers.current) {
       syncPlayersToCloud(players);
     }
   }, [players, currentUser]);
@@ -357,6 +385,7 @@ export const App: React.FC = () => {
 
     if (currentUser) {
       syncPlayersToCloud(updatedPlayers);
+      deletePlayerProfileFromCloud(playerId);
     }
   };
 

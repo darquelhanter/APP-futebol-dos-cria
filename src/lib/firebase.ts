@@ -170,6 +170,19 @@ export const syncPlayerProfileToCloud = async (player: Player) => {
   }
 };
 
+// Must be called whenever a player is removed — subscribeToCloudPlayers merges
+// this doc back in on every snapshot, so leaving it behind would resurrect a
+// deleted player the next time anyone's roster reconciles.
+export const deletePlayerProfileFromCloud = async (playerId: string): Promise<CloudSyncResult> => {
+  try {
+    await deleteDoc(doc(db, 'players', playerId));
+    return { success: true };
+  } catch (err: any) {
+    console.warn('Delete player profile error:', err);
+    return { success: false, error: err?.message || 'Erro ao excluir jogador da nuvem.' };
+  }
+};
+
 export const syncPlayersToCloud = async (players: Player[]) => {
   try {
     const docRef = doc(db, 'app_data', 'players_collection');
@@ -204,33 +217,56 @@ export const subscribeToCloudPeladas = (callback: (peladas: Pelada[]) => void) =
   );
 };
 
-// Real-time listener for Players Collection
+// Real-time listener for Players Collection.
+//
+// The roster is stored two ways: one document (app_data/players_collection)
+// holding the whole array, and one document per player under /players. Any
+// client syncing with an incomplete local roster only overwrites the array
+// field, so the individual documents are the safety net when that happens
+// (see syncPlayersToCloud). This listener always merges both sources —
+// individual docs win on conflict, since they can only be more complete,
+// never staler — instead of trusting the array doc alone.
 export const subscribeToCloudPlayers = (callback: (players: Player[]) => void) => {
-  const docRef = doc(db, 'app_data', 'players_collection');
-  return onSnapshot(
-    docRef,
-    async (snapshot) => {
-      if (snapshot.exists() && Array.isArray(snapshot.data()?.players)) {
-        const cloudPlayers: Player[] = snapshot.data()?.players || [];
-        callback(cloudPlayers);
-      } else {
-        // Fallback: check individual /players collection
-        try {
-          const playersSnap = await getDocs(collection(db, 'players'));
-          if (!playersSnap.empty) {
-            const list: Player[] = [];
-            playersSnap.forEach((d) => list.push(d.data() as Player));
-            callback(list);
-          }
-        } catch (e) {
-          console.warn('Error reading fallback players:', e);
-        }
-      }
+  const mainDocRef = doc(db, 'app_data', 'players_collection');
+  const individualCollRef = collection(db, 'players');
+
+  let mainPlayers: Player[] | null = null;
+  let individualPlayers: Player[] | null = null;
+
+  const emitMerged = () => {
+    if (mainPlayers === null && individualPlayers === null) return;
+    const byId = new Map<string, Player>();
+    (mainPlayers || []).forEach((p) => byId.set(p.id, p));
+    (individualPlayers || []).forEach((p) => byId.set(p.id, p));
+    callback(Array.from(byId.values()));
+  };
+
+  const unsubscribeMain = onSnapshot(
+    mainDocRef,
+    (snapshot) => {
+      mainPlayers = snapshot.exists() && Array.isArray(snapshot.data()?.players)
+        ? snapshot.data()!.players
+        : [];
+      emitMerged();
     },
-    (err) => {
-      console.warn('Players snapshot listener error:', err);
-    }
+    (err) => console.warn('Players main doc listener error:', err)
   );
+
+  const unsubscribeIndividual = onSnapshot(
+    individualCollRef,
+    (snapshot) => {
+      const list: Player[] = [];
+      snapshot.forEach((d) => list.push(d.data() as Player));
+      individualPlayers = list;
+      emitMerged();
+    },
+    (err) => console.warn('Players individual collection listener error:', err)
+  );
+
+  return () => {
+    unsubscribeMain();
+    unsubscribeIndividual();
+  };
 };
 
 export const clearCloudData = async (): Promise<void> => {
