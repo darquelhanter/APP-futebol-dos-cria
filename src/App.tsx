@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Pelada, Player, MatchGame, Team, NotificationLog } from './types';
 import {
   loadPeladasFromStorage,
@@ -19,7 +19,8 @@ import {
   syncAllPeladasToCloud,
   deletePeladaFromCloud,
   syncPlayersToCloud,
-  fetchCloudData,
+  subscribeToCloudPeladas,
+  subscribeToCloudPlayers,
   clearCloudData,
 } from './lib/firebase';
 import { User as FirebaseUser } from 'firebase/auth';
@@ -113,39 +114,63 @@ export const App: React.FC = () => {
     return () => window.removeEventListener('beforeinstallprompt', handleBeforeInstall);
   }, []);
 
-  // Firebase Auth listener and cloud data bootstrap
+  // Guards so cloud snapshots we just applied locally don't get echoed straight
+  // back to Firestore by the sync-to-cloud effects below (sync loop prevention).
+  const isApplyingRemotePlayers = useRef(false);
+  const isApplyingRemotePeladas = useRef(false);
+  const hasWipedMockData = useRef(false);
+
+  const wipeMockData = async () => {
+    if (hasWipedMockData.current) return;
+    hasWipedMockData.current = true;
+    await clearCloudData();
+    setPlayers([]);
+    setPeladas([]);
+    setCurrentPeladaId('');
+    setNotifications([]);
+    clearAllData();
+  };
+
+  // Firebase Auth listener + real-time cloud sync (peladas/players created by
+  // other users show up live, without needing to reload or log in again).
   useEffect(() => {
     checkRedirectLogin();
-    const unsubscribe = subscribeToAuth(async (user) => {
+    let unsubscribePeladas: (() => void) | undefined;
+    let unsubscribePlayers: (() => void) | undefined;
+
+    const unsubscribeAuth = subscribeToAuth((user) => {
       setCurrentUser(user);
       setAuthChecking(false);
+
+      unsubscribePeladas?.();
+      unsubscribePlayers?.();
+      unsubscribePeladas = undefined;
+      unsubscribePlayers = undefined;
+
       if (user) {
         setIsCloudSynced(true);
-        // Fetch cloud data
-        const cloudData = await fetchCloudData();
-        
-        // If cloud contains legacy mock data (e.g. 'p1' or 'pelada-next'), auto wipe it
-        const isMockPlayers = cloudData?.players?.some((p) => p.id === 'p1' || p.name === 'Carlos Eduardo');
-        const isMockPelada = cloudData?.peladas?.some((p) => p.id === 'pelada-next');
 
-        if (isMockPlayers || isMockPelada) {
-          await clearCloudData();
-          setPlayers([]);
-          setPeladas([]);
-          setCurrentPeladaId('');
-          setNotifications([]);
-          clearAllData();
-          return;
-        }
+        unsubscribePlayers = subscribeToCloudPlayers((cloudPlayers) => {
+          const isMockPlayers = cloudPlayers.some((p) => p.id === 'p1' || p.name === 'Carlos Eduardo');
+          if (isMockPlayers) {
+            wipeMockData();
+            return;
+          }
+          isApplyingRemotePlayers.current = true;
+          setPlayers(cloudPlayers);
+        });
 
-        if (cloudData?.players && Array.isArray(cloudData.players)) {
-          setPlayers(cloudData.players);
-        }
-        if (cloudData?.peladas && Array.isArray(cloudData.peladas)) {
+        unsubscribePeladas = subscribeToCloudPeladas((cloudPeladas) => {
+          const isMockPelada = cloudPeladas.some((p) => p.id === 'pelada-next');
+          if (isMockPelada) {
+            wipeMockData();
+            return;
+          }
+
           // Legacy peladas synced before creatorUid/creatorEmail existed have no
           // recorded owner. Claim them for whoever opens the app next, once,
           // instead of granting creator/admin rights to every visitor (security fix).
-          const repairedPeladas = cloudData.peladas.map((p) => {
+          const repairedPeladas = cloudPeladas.map((p) => {
             if (!p.creatorUid && !p.creatorEmail) {
               const claimed: Pelada = {
                 ...p,
@@ -159,20 +184,33 @@ export const App: React.FC = () => {
             return p;
           });
 
+          isApplyingRemotePeladas.current = true;
           setPeladas(repairedPeladas);
-          if (repairedPeladas.length > 0 && !repairedPeladas.find((p) => p.id === currentPeladaId)) {
-            setCurrentPeladaId(repairedPeladas[0].id);
-          }
-        }
+          setCurrentPeladaId((prevId) => {
+            if (repairedPeladas.length > 0 && !repairedPeladas.find((p) => p.id === prevId)) {
+              return repairedPeladas[0].id;
+            }
+            return prevId;
+          });
+        });
       }
     });
 
-    return () => unsubscribe();
+    return () => {
+      unsubscribeAuth();
+      unsubscribePeladas?.();
+      unsubscribePlayers?.();
+    };
   }, []);
 
-  // Sync to storage and cloud on updates
+  // Sync to storage and cloud on updates (skipped when the change just came
+  // down from the real-time cloud listeners above).
   useEffect(() => {
     savePlayersToStorage(players);
+    if (isApplyingRemotePlayers.current) {
+      isApplyingRemotePlayers.current = false;
+      return;
+    }
     if (currentUser && players.length > 0) {
       syncPlayersToCloud(players);
     }
@@ -180,6 +218,10 @@ export const App: React.FC = () => {
 
   useEffect(() => {
     savePeladasToStorage(peladas);
+    if (isApplyingRemotePeladas.current) {
+      isApplyingRemotePeladas.current = false;
+      return;
+    }
     if (currentUser && peladas.length > 0) {
       syncAllPeladasToCloud(peladas);
     }
@@ -192,19 +234,31 @@ export const App: React.FC = () => {
   // Current active pelada
   const currentPelada = peladas.find((p) => p.id === currentPeladaId) || peladas[0] || null;
 
-  const handleUpdateCurrentPelada = (updatedPelada: Pelada) => {
+  const handleUpdateCurrentPelada = async (updatedPelada: Pelada) => {
     setPeladas((prev) => prev.map((p) => (p.id === updatedPelada.id ? updatedPelada : p)));
     if (currentUser) {
-      syncPeladaToCloud(updatedPelada);
+      const result = await syncPeladaToCloud(updatedPelada);
+      if (!result.success) {
+        alert(
+          `Não foi possível salvar as alterações na nuvem${result.error ? `: ${result.error}` : '.'} ` +
+          'Elas ficaram salvas apenas neste dispositivo por enquanto.'
+        );
+      }
     }
   };
 
-  const handleCreatePelada = (newPelada: Pelada) => {
+  const handleCreatePelada = async (newPelada: Pelada) => {
     setPeladas((prev) => [newPelada, ...prev]);
     setCurrentPeladaId(newPelada.id);
     setActiveTab('overview');
     if (currentUser) {
-      syncPeladaToCloud(newPelada);
+      const result = await syncPeladaToCloud(newPelada);
+      if (!result.success) {
+        alert(
+          `Não foi possível salvar a pelada na nuvem${result.error ? `: ${result.error}` : '.'} ` +
+          'Ela ficou salva apenas neste dispositivo por enquanto.'
+        );
+      }
     }
   };
 
