@@ -730,6 +730,7 @@ export const App: React.FC = () => {
           <AttendanceManager
             pelada={currentPelada}
             allPlayers={players}
+            currentUser={currentUser}
             onUpdatePelada={handleUpdateCurrentPelada}
             onAddPlayer={(newPlayer) => setPlayers((prev) => [...prev, newPlayer])}
             onSelectPlayer={(p) => setSelectedPlayer(p)}

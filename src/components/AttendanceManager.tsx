@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
+import { User as FirebaseUser } from 'firebase/auth';
 import { Pelada, Player, ConfirmedPlayer, AttendanceStatus, PaymentStatus, NotificationLog } from '../types';
+import { isPeladaAdmin } from '../utils/permissions';
 import {
   Users,
   CheckCircle2,
@@ -29,6 +31,7 @@ import {
 interface AttendanceManagerProps {
   pelada?: Pelada | null;
   allPlayers: Player[];
+  currentUser?: FirebaseUser | null;
   onUpdatePelada: (updated: Pelada) => void;
   onAddPlayer: (player: Player) => void;
   onAddNotification: (notif: NotificationLog) => void;
@@ -40,6 +43,7 @@ interface AttendanceManagerProps {
 export const AttendanceManager: React.FC<AttendanceManagerProps> = ({
   pelada,
   allPlayers,
+  currentUser,
   onUpdatePelada,
   onAddPlayer,
   onAddNotification,
@@ -82,6 +86,19 @@ export const AttendanceManager: React.FC<AttendanceManagerProps> = ({
 
   const playersMap = new Map<string, Player>(allPlayers.map((p) => [p.id, p]));
 
+  const isAdmin = isPeladaAdmin(pelada, currentUser || null);
+
+  // Only the pelada admin can change someone else's status; a regular
+  // authorized user can only confirm/decline their own presence.
+  const canEditStatus = (playerId: string) => {
+    if (isAdmin) return true;
+    const targetPlayer = playersMap.get(playerId);
+    if (!targetPlayer || !currentUser) return false;
+    if (currentUser.uid && targetPlayer.userId === currentUser.uid) return true;
+    if (currentUser.email && targetPlayer.userEmail === currentUser.email) return true;
+    return false;
+  };
+
   const confirmedList = pelada.confirmedPlayers.filter((p) => p.status === 'confirmed');
   const waitlistList = pelada.confirmedPlayers.filter((p) => p.status === 'waitlist');
   const pendingList = pelada.confirmedPlayers.filter((p) => p.status === 'pending');
@@ -104,6 +121,7 @@ export const AttendanceManager: React.FC<AttendanceManagerProps> = ({
   });
 
   const handleStatusChange = (playerId: string, newStatus: AttendanceStatus) => {
+    if (!canEditStatus(playerId)) return;
     let updatedConfirmed = [...pelada.confirmedPlayers];
     const existingIndex = updatedConfirmed.findIndex((p) => p.playerId === playerId);
 
@@ -160,6 +178,7 @@ export const AttendanceManager: React.FC<AttendanceManagerProps> = ({
     newStatus: PaymentStatus,
     method?: 'pix' | 'dinheiro' | 'cartao'
   ) => {
+    if (!isAdmin) return;
     const player = playersMap.get(playerId);
     const amount = player?.type === 'mensalista' ? pelada.priceMensalista : pelada.priceDiarista;
 
@@ -489,6 +508,7 @@ export const AttendanceManager: React.FC<AttendanceManagerProps> = ({
             const isConfirmed = cp.status === 'confirmed';
             const isWaitlist = cp.status === 'waitlist';
             const isPaid = cp.paymentStatus === 'paid';
+            const canEditThisRow = canEditStatus(cp.playerId);
 
             return (
               <div
@@ -540,12 +560,17 @@ export const AttendanceManager: React.FC<AttendanceManagerProps> = ({
                     <button
                       id={`btn-confirm-${cp.playerId}`}
                       onClick={() => handleStatusChange(cp.playerId, 'confirmed')}
+                      disabled={!canEditThisRow}
                       className={`px-2.5 py-1 rounded-lg text-xs font-bold flex items-center gap-1 transition-all ${
+                        !canEditThisRow
+                          ? 'opacity-40 cursor-not-allowed'
+                          : ''
+                      } ${
                         isConfirmed
                           ? 'bg-capim text-gramado shadow-sm'
                           : 'text-giz/50 hover:text-capim-light'
                       }`}
-                      title="Confirmar presença"
+                      title={canEditThisRow ? 'Confirmar presença' : 'Só o administrador pode alterar a presença de outros atletas'}
                     >
                       <CheckCircle2 className="w-3.5 h-3.5" />
                       <span>{isConfirmed ? 'Confirmado' : 'Confirmar'}</span>
@@ -553,12 +578,17 @@ export const AttendanceManager: React.FC<AttendanceManagerProps> = ({
                     <button
                       id={`btn-waitlist-${cp.playerId}`}
                       onClick={() => handleStatusChange(cp.playerId, 'waitlist')}
+                      disabled={!canEditThisRow}
                       className={`px-2.5 py-1 rounded-lg text-xs font-bold flex items-center gap-1 transition-all ${
+                        !canEditThisRow
+                          ? 'opacity-40 cursor-not-allowed'
+                          : ''
+                      } ${
                         isWaitlist
                           ? 'bg-amber-500 text-gramado shadow-sm'
                           : 'text-giz/50 hover:text-amber-400'
                       }`}
-                      title="Mover para lista de espera"
+                      title={canEditThisRow ? 'Mover para lista de espera' : 'Só o administrador pode alterar a presença de outros atletas'}
                     >
                       <Clock className="w-3.5 h-3.5" />
                       <span>{isWaitlist ? 'Espera' : 'Espera'}</span>
@@ -566,26 +596,34 @@ export const AttendanceManager: React.FC<AttendanceManagerProps> = ({
                     <button
                       id={`btn-decline-${cp.playerId}`}
                       onClick={() => handleStatusChange(cp.playerId, 'declined')}
+                      disabled={!canEditThisRow}
                       className={`px-2.5 py-1 rounded-lg text-xs font-bold flex items-center gap-1 transition-all ${
+                        !canEditThisRow
+                          ? 'opacity-40 cursor-not-allowed'
+                          : ''
+                      } ${
                         cp.status === 'declined'
                           ? 'bg-rose-500 text-giz shadow-sm'
                           : 'text-giz/50 hover:text-rose-400'
                       }`}
-                      title="Recusar presença"
+                      title={canEditThisRow ? 'Recusar presença' : 'Só o administrador pode alterar a presença de outros atletas'}
                     >
                       <XCircle className="w-3.5 h-3.5" />
                       <span>Recusar</span>
                     </button>
                   </div>
 
-                  {/* Payment Status Dropdown / Quick Toggle */}
+                  {/* Payment Status Dropdown / Quick Toggle — admin only */}
                   <div className="flex items-center gap-1.5">
                     {isPaid ? (
                       <button
                         id={`btn-pay-status-${cp.playerId}`}
                         onClick={() => handlePaymentStatusChange(cp.playerId, 'pending')}
-                        className="px-2.5 py-1 rounded-xl bg-capim/10 hover:bg-capim/20 text-capim-light border border-capim/30 text-xs font-bold flex items-center gap-1 transition-colors"
-                        title="Clique para desmarcar pagamento"
+                        disabled={!isAdmin}
+                        className={`px-2.5 py-1 rounded-xl bg-capim/10 border border-capim/30 text-xs font-bold flex items-center gap-1 transition-colors ${
+                          isAdmin ? 'hover:bg-capim/20 text-capim-light' : 'text-capim-light/50 cursor-not-allowed'
+                        }`}
+                        title={isAdmin ? 'Clique para desmarcar pagamento' : 'Só o administrador pode alterar pagamentos'}
                       >
                         <Check className="w-3.5 h-3.5 text-capim-light" />
                         <span>Pago {formatCurrency(cp.paidAmount || (player.type === 'mensalista' ? pelada.priceMensalista : pelada.priceDiarista))}</span>
@@ -594,8 +632,11 @@ export const AttendanceManager: React.FC<AttendanceManagerProps> = ({
                       <button
                         id={`btn-mark-paid-${cp.playerId}`}
                         onClick={() => handlePaymentStatusChange(cp.playerId, 'paid', 'pix')}
-                        className="px-2.5 py-1 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 border border-amber-500/30 text-xs font-bold flex items-center gap-1 transition-colors"
-                        title="Marcar como Pago via PIX"
+                        disabled={!isAdmin}
+                        className={`px-2.5 py-1 rounded-xl bg-amber-500/10 border border-amber-500/30 text-xs font-bold flex items-center gap-1 transition-colors ${
+                          isAdmin ? 'hover:bg-amber-500/20 text-amber-300' : 'text-amber-300/50 cursor-not-allowed'
+                        }`}
+                        title={isAdmin ? 'Marcar como Pago via PIX' : 'Só o administrador pode alterar pagamentos'}
                       >
                         <DollarSign className="w-3.5 h-3.5" />
                         <span>Pagar {formatCurrency(player.type === 'mensalista' ? pelada.priceMensalista : pelada.priceDiarista)}</span>
