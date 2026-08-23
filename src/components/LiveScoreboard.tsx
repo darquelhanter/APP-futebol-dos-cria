@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Pelada, Player, MatchGame, MatchEvent, Team } from '../types';
+import { User as FirebaseUser } from 'firebase/auth';
 import {
   Play,
   Pause,
@@ -14,10 +15,14 @@ import {
   CheckCircle,
   Clock,
   Flame,
-  AlertCircle
+  AlertCircle,
+  Trash2,
+  Calendar
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { playWhistleSound, playGoalCheerSound } from '../utils/audio';
+import { formatDateBR } from '../utils/whatsappGenerator';
+import { isPeladaAdmin } from '../utils/permissions';
 
 interface LiveScoreboardProps {
   pelada?: Pelada | null;
@@ -25,7 +30,10 @@ interface LiveScoreboardProps {
   onUpdatePelada: (updated: Pelada) => void;
   onUpdatePlayers: (players: Player[]) => void;
   onSelectPlayer: (player: Player) => void;
+  currentUser?: FirebaseUser | null;
 }
+
+const todayISO = () => new Date().toISOString().slice(0, 10);
 
 export const LiveScoreboard: React.FC<LiveScoreboardProps> = ({
   pelada,
@@ -33,8 +41,10 @@ export const LiveScoreboard: React.FC<LiveScoreboardProps> = ({
   onUpdatePelada,
   onUpdatePlayers,
   onSelectPlayer,
+  currentUser,
 }) => {
   const playersMap = new Map<string, Player>(allPlayers.map((p) => [p.id, p]));
+  const isAdmin = isPeladaAdmin(pelada, currentUser || null);
 
   // Selected or active match
   const [selectedMatchIndex, setSelectedMatchIndex] = useState<number>(0);
@@ -42,6 +52,8 @@ export const LiveScoreboard: React.FC<LiveScoreboardProps> = ({
   const [isRunning, setIsRunning] = useState<boolean>(false);
   const [cardModalOpen, setCardModalOpen] = useState<{ teamId: string; type: 'yellow_card' | 'red_card' } | null>(null);
   const [selectedCardPlayerId, setSelectedCardPlayerId] = useState<string>('');
+  const [newMatchModalOpen, setNewMatchModalOpen] = useState(false);
+  const [newMatchDate, setNewMatchDate] = useState(todayISO());
 
   const timerRef = useRef<number | null>(null);
 
@@ -52,6 +64,7 @@ export const LiveScoreboard: React.FC<LiveScoreboardProps> = ({
       const initialMatch: MatchGame = {
         id: `match-1-${Date.now()}`,
         roundNumber: 1,
+        date: pelada.date,
         teamAId: pelada.teams[0].id,
         teamBId: pelada.teams[1].id,
         scoreA: 0,
@@ -316,11 +329,19 @@ export const LiveScoreboard: React.FC<LiveScoreboardProps> = ({
     });
   };
 
-  // Create next round match
-  const handleAddNewMatch = () => {
+  // Open the "new match" date prompt
+  const handleOpenNewMatchModal = () => {
+    if (pelada.teams.length < 2) return;
+    setNewMatchDate(todayISO());
+    setNewMatchModalOpen(true);
+  };
+
+  // Create next round match, on the chosen date
+  const handleConfirmAddNewMatch = (e: React.FormEvent) => {
+    e.preventDefault();
     if (pelada.teams.length < 2) return;
     const roundNumber = (pelada.matches?.length || 0) + 1;
-    
+
     // Cycle teams
     const teamAIndex = (roundNumber - 1) % pelada.teams.length;
     const teamBIndex = roundNumber % pelada.teams.length;
@@ -328,6 +349,7 @@ export const LiveScoreboard: React.FC<LiveScoreboardProps> = ({
     const newMatch: MatchGame = {
       id: `match-${roundNumber}-${Date.now()}`,
       roundNumber,
+      date: newMatchDate || undefined,
       teamAId: pelada.teams[teamAIndex].id,
       teamBId: pelada.teams[teamBIndex].id,
       scoreA: 0,
@@ -345,6 +367,27 @@ export const LiveScoreboard: React.FC<LiveScoreboardProps> = ({
     setSelectedMatchIndex((pelada.matches || []).length);
     setTimerSeconds(0);
     setIsRunning(false);
+    setNewMatchModalOpen(false);
+  };
+
+  // Delete a match (admin only)
+  const handleDeleteMatch = (matchId: string) => {
+    if (!isAdmin || !pelada.matches) return;
+    if (!window.confirm('Tem certeza que deseja excluir este jogo? Os gols, cartões e estatísticas dessa partida serão perdidos.')) return;
+
+    const deletedIndex = pelada.matches.findIndex((m) => m.id === matchId);
+    const updatedMatches = pelada.matches.filter((m) => m.id !== matchId);
+
+    onUpdatePelada({
+      ...pelada,
+      matches: updatedMatches,
+    });
+
+    if (deletedIndex <= selectedMatchIndex) {
+      setSelectedMatchIndex(Math.max(0, selectedMatchIndex - 1));
+      setTimerSeconds(0);
+      setIsRunning(false);
+    }
   };
 
   if (!pelada.teams || pelada.teams.length < 2) {
@@ -365,30 +408,51 @@ export const LiveScoreboard: React.FC<LiveScoreboardProps> = ({
       <div className="flex items-center justify-between gap-3 overflow-x-auto pb-1">
         <div className="flex items-center gap-2">
           {pelada.matches?.map((m, idx) => (
-            <button
-              key={m.id}
-              id={`btn-match-tab-${idx}`}
-              onClick={() => {
-                setSelectedMatchIndex(idx);
-                setIsRunning(false);
-              }}
-              className={`px-4 py-2 rounded-2xl text-xs font-black transition-all flex items-center gap-2 ${
-                selectedMatchIndex === idx
-                  ? 'bg-capim text-giz shadow-lg'
-                  : 'bg-gramado-card text-giz/50 hover:text-giz border border-gramado-light'
-              }`}
-            >
-              <span>Jogo {m.roundNumber}</span>
-              <span className={`text-[10px] px-1.5 py-0.5 rounded-full ${m.status === 'finished' ? 'bg-gramado-light text-capim-light' : m.status === 'playing' ? 'bg-rose-500 text-giz animate-pulse' : 'bg-gramado-light text-giz/50'}`}>
-                {m.status === 'finished' ? 'Encerrado' : m.status === 'playing' ? 'AO VIVO' : 'Agendado'}
-              </span>
-            </button>
+            <div key={m.id} className="relative group">
+              <button
+                id={`btn-match-tab-${idx}`}
+                onClick={() => {
+                  setSelectedMatchIndex(idx);
+                  setIsRunning(false);
+                }}
+                className={`px-4 py-2 rounded-2xl text-xs font-black transition-all flex items-center gap-2 ${
+                  selectedMatchIndex === idx
+                    ? 'bg-capim text-giz shadow-lg'
+                    : 'bg-gramado-card text-giz/50 hover:text-giz border border-gramado-light'
+                } ${isAdmin ? 'pr-8' : ''}`}
+              >
+                <span className="flex flex-col items-start leading-tight">
+                  <span>Jogo {m.roundNumber}</span>
+                  {m.date && (
+                    <span className={`text-[9px] font-bold ${selectedMatchIndex === idx ? 'text-gramado/70' : 'text-giz/35'}`}>
+                      {formatDateBR(m.date)}
+                    </span>
+                  )}
+                </span>
+                <span className={`text-[10px] px-1.5 py-0.5 rounded-full ${m.status === 'finished' ? 'bg-gramado-light text-capim-light' : m.status === 'playing' ? 'bg-rose-500 text-giz animate-pulse' : 'bg-gramado-light text-giz/50'}`}>
+                  {m.status === 'finished' ? 'Encerrado' : m.status === 'playing' ? 'AO VIVO' : 'Agendado'}
+                </span>
+              </button>
+              {isAdmin && (
+                <button
+                  id={`btn-delete-match-${idx}`}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleDeleteMatch(m.id);
+                  }}
+                  className="absolute right-1.5 top-1/2 -translate-y-1/2 p-1 rounded-lg text-current opacity-60 hover:opacity-100 hover:text-rose-400 transition-all"
+                  title="Excluir este jogo"
+                >
+                  <Trash2 className="w-3 h-3" />
+                </button>
+              )}
+            </div>
           ))}
         </div>
 
         <button
           id="btn-add-new-match"
-          onClick={handleAddNewMatch}
+          onClick={handleOpenNewMatchModal}
           className="px-3.5 py-2 bg-gramado-light hover:bg-giz/15 text-giz/85 border border-giz/15 rounded-2xl text-xs font-bold flex items-center gap-1.5 transition-colors whitespace-nowrap"
         >
           <Plus className="w-4 h-4 text-capim-light" />
@@ -403,6 +467,7 @@ export const LiveScoreboard: React.FC<LiveScoreboardProps> = ({
           <div className="flex items-center justify-between mb-4">
             <span className="text-xs font-black uppercase tracking-wider text-capim-light bg-capim/10 px-3 py-1 rounded-full border border-capim/30">
               Placar ao Vivo • Jogo {currentMatch.roundNumber}
+              {currentMatch.date && ` • ${formatDateBR(currentMatch.date)}`}
             </span>
             <button
               id="btn-play-whistle-sound"
@@ -639,6 +704,57 @@ export const LiveScoreboard: React.FC<LiveScoreboardProps> = ({
                 })}
               </div>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* New Match Modal */}
+      {newMatchModalOpen && (
+        <div
+          id="new-match-modal"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
+          onClick={() => setNewMatchModalOpen(false)}
+        >
+          <div
+            className="w-full max-w-sm bg-gramado-card border border-gramado-light rounded-3xl p-6 shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3 className="text-lg font-black text-giz mb-1 flex items-center gap-2">
+              <Calendar className="w-5 h-5 text-capim-light" /> Nova Partida
+            </h3>
+            <p className="text-xs text-giz/50 mb-4">
+              Como os jogos acontecem toda semana, escolha a data desta partida.
+            </p>
+
+            <form onSubmit={handleConfirmAddNewMatch} className="space-y-4 text-xs">
+              <div>
+                <label className="text-giz/70 font-bold block mb-1">Data do Jogo</label>
+                <input
+                  id="input-new-match-date"
+                  type="date"
+                  required
+                  value={newMatchDate}
+                  onChange={(e) => setNewMatchDate(e.target.value)}
+                  className="w-full bg-gramado border border-giz/15 rounded-xl px-3 py-2 text-giz focus:outline-none focus:border-capim"
+                />
+              </div>
+
+              <div className="flex items-center justify-end gap-2 pt-3 border-t border-gramado-light">
+                <button
+                  type="button"
+                  onClick={() => setNewMatchModalOpen(false)}
+                  className="px-4 py-2 bg-gramado-light text-giz/70 rounded-xl font-bold hover:bg-giz/15"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  className="px-5 py-2 bg-capim hover:bg-capim text-giz rounded-xl font-bold shadow-lg transition-colors"
+                >
+                  Criar Partida
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}

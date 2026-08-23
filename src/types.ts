@@ -77,6 +77,7 @@ export interface MatchEvent {
 export interface MatchGame {
   id: string;
   roundNumber: number;
+  date?: string; // YYYY-MM-DD
   teamAId: string;
   teamBId: string;
   scoreA: number;
