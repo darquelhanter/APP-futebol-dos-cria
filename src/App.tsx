@@ -775,6 +775,7 @@ export const App: React.FC = () => {
             allPlayers={players}
             onUpdatePelada={handleUpdateCurrentPelada}
             onSelectPlayer={(p) => setSelectedPlayer(p)}
+            currentUser={currentUser}
           />
         )}
 

@@ -14,14 +14,17 @@ import {
   Award
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
+import { User as FirebaseUser } from 'firebase/auth';
 import { balanceTeams } from '../utils/teamBalancer';
 import { generateTeamsDrawMessage, openWhatsAppWithText } from '../utils/whatsappGenerator';
+import { isPeladaAdmin } from '../utils/permissions';
 
 interface TeamDrawerProps {
   pelada?: Pelada | null;
   allPlayers: Player[];
   onUpdatePelada: (updated: Pelada) => void;
   onSelectPlayer: (player: Player) => void;
+  currentUser?: FirebaseUser | null;
 }
 
 export const TeamDrawer: React.FC<TeamDrawerProps> = ({
@@ -29,10 +32,12 @@ export const TeamDrawer: React.FC<TeamDrawerProps> = ({
   allPlayers,
   onUpdatePelada,
   onSelectPlayer,
+  currentUser,
 }) => {
   const [teamsCount, setTeamsCount] = useState<number>(pelada?.teamsCount || 2);
   const [isDrawing, setIsDrawing] = useState(false);
   const [selectedPlayerToMove, setSelectedPlayerToMove] = useState<{ playerId: string; fromTeamId: string } | null>(null);
+  const isAdmin = isPeladaAdmin(pelada, currentUser || null);
 
   if (!pelada) {
     return (
@@ -61,6 +66,7 @@ export const TeamDrawer: React.FC<TeamDrawerProps> = ({
 
   // Run balanced draw with animation and confetti
   const handlePerformDraw = () => {
+    if (!isAdmin) return;
     if (confirmedPlayers.length < teamsCount * 2) {
       alert(`Você precisa de pelo menos ${teamsCount * 2} jogadores confirmados para sortear ${teamsCount} times!`);
       return;
@@ -93,7 +99,7 @@ export const TeamDrawer: React.FC<TeamDrawerProps> = ({
 
   // Move or swap player between teams
   const handleTransferPlayer = (targetTeamId: string) => {
-    if (!selectedPlayerToMove) return;
+    if (!isAdmin || !selectedPlayerToMove) return;
 
     const { playerId, fromTeamId } = selectedPlayerToMove;
     if (fromTeamId === targetTeamId) {
@@ -173,8 +179,10 @@ export const TeamDrawer: React.FC<TeamDrawerProps> = ({
                 <button
                   key={count}
                   id={`btn-teams-count-${count}`}
+                  disabled={!isAdmin}
                   onClick={() => setTeamsCount(count)}
-                  className={`px-3 py-1.5 rounded-xl text-xs font-black transition-all ${
+                  title={isAdmin ? undefined : 'Só o administrador pode sortear os times'}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-black transition-all disabled:opacity-40 disabled:cursor-not-allowed ${
                     teamsCount === count
                       ? 'bg-capim text-giz shadow-md'
                       : 'text-giz/50 hover:text-giz hover:bg-gramado-light'
@@ -187,8 +195,9 @@ export const TeamDrawer: React.FC<TeamDrawerProps> = ({
 
             <button
               id="btn-sortear-times"
-              disabled={isDrawing || confirmedPlayers.length === 0}
+              disabled={!isAdmin || isDrawing || confirmedPlayers.length === 0}
               onClick={handlePerformDraw}
+              title={isAdmin ? undefined : 'Só o administrador pode sortear os times'}
               className="px-5 py-2.5 bg-gradient-to-r from-capim to-barro hover:from-capim hover:to-barro text-giz rounded-2xl text-xs font-black flex items-center gap-2 shadow-lg shadow-capim/30 transition-all active:scale-95 disabled:opacity-50"
             >
               <Sparkles className={`w-4 h-4 ${isDrawing ? 'animate-spin' : ''}`} />
@@ -318,17 +327,18 @@ export const TeamDrawer: React.FC<TeamDrawerProps> = ({
                             </span>
                             <button
                               id={`btn-swap-${p.id}`}
+                              disabled={!isAdmin}
                               onClick={() =>
                                 setSelectedPlayerToMove(
                                   isSelected ? null : { playerId: p.id, fromTeamId: team.id }
                                 )
                               }
-                              className={`p-1 rounded-lg text-[10px] font-bold border transition-colors ${
+                              className={`p-1 rounded-lg text-[10px] font-bold border transition-colors disabled:opacity-40 disabled:cursor-not-allowed ${
                                 isSelected
                                   ? 'bg-amber-500 text-gramado border-amber-400'
                                   : 'bg-gramado-light text-giz/50 hover:text-giz/85 border-giz/15'
                               }`}
-                              title="Trocar de time"
+                              title={isAdmin ? 'Trocar de time' : 'Só o administrador pode mover jogadores entre times'}
                             >
                               <ArrowLeftRight className="w-3 h-3" />
                             </button>
