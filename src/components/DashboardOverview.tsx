@@ -250,7 +250,12 @@ export const DashboardOverview: React.FC<DashboardOverviewProps> = ({
             </div>
 
             <div className="flex flex-wrap items-center justify-between gap-2">
-              <h1 className="text-3xl sm:text-5xl font-display uppercase tracking-wide text-giz leading-none">
+              <h1
+                id="hero-title-goto-teams"
+                onClick={() => onNavigateTab('sorteio')}
+                className="text-3xl sm:text-5xl font-display uppercase tracking-wide text-giz leading-none cursor-pointer hover:text-capim-light transition-colors"
+                title="Ver os times sorteados"
+              >
                 {pelada.title}
               </h1>
 

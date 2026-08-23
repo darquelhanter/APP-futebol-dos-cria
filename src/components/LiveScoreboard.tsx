@@ -40,9 +40,6 @@ export const LiveScoreboard: React.FC<LiveScoreboardProps> = ({
   const [selectedMatchIndex, setSelectedMatchIndex] = useState<number>(0);
   const [timerSeconds, setTimerSeconds] = useState<number>(0);
   const [isRunning, setIsRunning] = useState<boolean>(false);
-  const [goalModalOpen, setGoalModalOpen] = useState<{ teamId: string } | null>(null);
-  const [selectedScorerId, setSelectedScorerId] = useState<string>('');
-  const [selectedAssistId, setSelectedAssistId] = useState<string>('');
   const [cardModalOpen, setCardModalOpen] = useState<{ teamId: string; type: 'yellow_card' | 'red_card' } | null>(null);
   const [selectedCardPlayerId, setSelectedCardPlayerId] = useState<string>('');
 
@@ -129,14 +126,31 @@ export const LiveScoreboard: React.FC<LiveScoreboardProps> = ({
     setTimerSeconds(0);
   };
 
-  // Add goal event
-  const handleRegisterGoal = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!goalModalOpen || !selectedScorerId || !currentMatch) return;
+  // Most recently registered goal event in the current match (assist target)
+  const getLastGoalEvent = (): MatchEvent | null => {
+    if (!currentMatch) return null;
+    for (let i = currentMatch.events.length - 1; i >= 0; i--) {
+      if (currentMatch.events[i].type === 'goal') return currentMatch.events[i];
+    }
+    return null;
+  };
+
+  const canAssistLastGoal = (playerId: string, teamId: string) => {
+    const lastGoal = getLastGoalEvent();
+    if (!lastGoal) return false;
+    if (lastGoal.teamId !== teamId) return false;
+    if (lastGoal.playerId === playerId) return false;
+    if (lastGoal.assistPlayerId) return false;
+    return true;
+  };
+
+  // Instantly register a goal for a player (one click, no modal)
+  const handleQuickGoal = (playerId: string, teamId: string) => {
+    if (!currentMatch) return;
 
     playGoalCheerSound();
 
-    const isTeamA = goalModalOpen.teamId === currentMatch.teamAId;
+    const isTeamA = teamId === currentMatch.teamAId;
     const newScoreA = isTeamA ? currentMatch.scoreA + 1 : currentMatch.scoreA;
     const newScoreB = !isTeamA ? currentMatch.scoreB + 1 : currentMatch.scoreB;
 
@@ -144,9 +158,8 @@ export const LiveScoreboard: React.FC<LiveScoreboardProps> = ({
       id: `ev-${Date.now()}`,
       minute: Math.floor(timerSeconds / 60) || 1,
       type: 'goal',
-      playerId: selectedScorerId,
-      assistPlayerId: selectedAssistId || undefined,
-      teamId: goalModalOpen.teamId,
+      playerId,
+      teamId,
     };
 
     const updatedMatches = [...pelada.matches];
@@ -170,10 +183,28 @@ export const LiveScoreboard: React.FC<LiveScoreboardProps> = ({
       ...pelada,
       matches: updatedMatches,
     });
+  };
 
-    setGoalModalOpen(null);
-    setSelectedScorerId('');
-    setSelectedAssistId('');
+  // Attach a player as the assist of the last registered goal (one click, no modal)
+  const handleQuickAssist = (playerId: string, teamId: string) => {
+    if (!currentMatch) return;
+    const lastGoal = getLastGoalEvent();
+    if (!lastGoal || !canAssistLastGoal(playerId, teamId)) return;
+
+    const updatedEvents = currentMatch.events.map((ev) =>
+      ev.id === lastGoal.id ? { ...ev, assistPlayerId: playerId } : ev
+    );
+
+    const updatedMatches = [...pelada.matches];
+    updatedMatches[selectedMatchIndex] = {
+      ...currentMatch,
+      events: updatedEvents,
+    };
+
+    onUpdatePelada({
+      ...pelada,
+      matches: updatedMatches,
+    });
   };
 
   // Add card event
@@ -388,7 +419,7 @@ export const LiveScoreboard: React.FC<LiveScoreboardProps> = ({
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-center my-6">
             
             {/* Team A */}
-            <div className="flex flex-col items-center md:items-end text-center md:text-right">
+            <div className="flex flex-col items-center md:items-end text-center md:text-right w-full">
               <div className="flex items-center gap-2 mb-2">
                 <div
                   className="w-4 h-4 rounded-full border border-white/20"
@@ -396,17 +427,53 @@ export const LiveScoreboard: React.FC<LiveScoreboardProps> = ({
                 />
                 <h3 className="text-xl font-black text-giz">{teamA.name}</h3>
               </div>
-              <button
-                id="btn-goal-team-a"
-                onClick={() => setGoalModalOpen({ teamId: teamA.id })}
-                className="mt-3 px-4 py-2 bg-capim/20 hover:bg-capim/30 text-capim-light border border-capim/40 rounded-2xl text-xs font-black flex items-center gap-1.5 shadow-sm transition-all"
-              >
-                <Plus className="w-4 h-4" /> Registrar Gol
-              </button>
+
+              <div className="w-full max-h-56 overflow-y-auto space-y-1.5 pr-0.5">
+                {teamAPlayers.map((p) => {
+                  const assistEnabled = canAssistLastGoal(p.id, teamA.id);
+                  return (
+                    <div
+                      key={p.id}
+                      id={`scoreboard-player-a-${p.id}`}
+                      className="flex flex-row-reverse items-center justify-between gap-2 bg-gramado/60 hover:bg-gramado border border-gramado-light rounded-xl px-2.5 py-1.5"
+                    >
+                      <div className="flex flex-row-reverse items-center gap-2 min-w-0">
+                        <img
+                          src={p.photoUrl}
+                          alt={p.name}
+                          referrerPolicy="no-referrer"
+                          className="w-7 h-7 rounded-lg object-cover border border-giz/15 shrink-0"
+                        />
+                        <span className="text-xs font-bold text-giz truncate">{p.nickname || p.name}</span>
+                      </div>
+                      <div className="flex items-center gap-1 shrink-0">
+                        <button
+                          id={`btn-quick-goal-${p.id}`}
+                          onClick={() => handleQuickGoal(p.id, teamA.id)}
+                          className="p-1.5 rounded-lg bg-capim/15 hover:bg-capim/30 text-sm transition-colors"
+                          title="Registrar gol"
+                        >
+                          ⚽
+                        </button>
+                        <button
+                          id={`btn-quick-assist-${p.id}`}
+                          disabled={!assistEnabled}
+                          onClick={() => handleQuickAssist(p.id, teamA.id)}
+                          className="p-1.5 rounded-lg bg-amber-500/15 hover:bg-amber-500/30 text-sm transition-colors disabled:opacity-25 disabled:cursor-not-allowed disabled:hover:bg-amber-500/15"
+                          title={assistEnabled ? 'Marcar assistência no último gol' : 'Marque um gol do time antes de dar assistência'}
+                        >
+                          🎯
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
               <button
                 id="btn-card-team-a"
                 onClick={() => setCardModalOpen({ teamId: teamA.id, type: 'yellow_card' })}
-                className="mt-1.5 text-[11px] font-bold text-giz/50 hover:text-amber-400 transition-colors"
+                className="mt-2.5 text-[11px] font-bold text-giz/50 hover:text-amber-400 transition-colors"
               >
                 + Cartão
               </button>
@@ -461,7 +528,7 @@ export const LiveScoreboard: React.FC<LiveScoreboardProps> = ({
             </div>
 
             {/* Team B */}
-            <div className="flex flex-col items-center md:items-start text-center md:text-left">
+            <div className="flex flex-col items-center md:items-start text-center md:text-left w-full">
               <div className="flex items-center gap-2 mb-2">
                 <div
                   className="w-4 h-4 rounded-full border border-white/20"
@@ -469,17 +536,53 @@ export const LiveScoreboard: React.FC<LiveScoreboardProps> = ({
                 />
                 <h3 className="text-xl font-black text-giz">{teamB.name}</h3>
               </div>
-              <button
-                id="btn-goal-team-b"
-                onClick={() => setGoalModalOpen({ teamId: teamB.id })}
-                className="mt-3 px-4 py-2 bg-capim/20 hover:bg-capim/30 text-capim-light border border-capim/40 rounded-2xl text-xs font-black flex items-center gap-1.5 shadow-sm transition-all"
-              >
-                <Plus className="w-4 h-4" /> Registrar Gol
-              </button>
+
+              <div className="w-full max-h-56 overflow-y-auto space-y-1.5 pl-0.5">
+                {teamBPlayers.map((p) => {
+                  const assistEnabled = canAssistLastGoal(p.id, teamB.id);
+                  return (
+                    <div
+                      key={p.id}
+                      id={`scoreboard-player-b-${p.id}`}
+                      className="flex items-center justify-between gap-2 bg-gramado/60 hover:bg-gramado border border-gramado-light rounded-xl px-2.5 py-1.5"
+                    >
+                      <div className="flex items-center gap-2 min-w-0">
+                        <img
+                          src={p.photoUrl}
+                          alt={p.name}
+                          referrerPolicy="no-referrer"
+                          className="w-7 h-7 rounded-lg object-cover border border-giz/15 shrink-0"
+                        />
+                        <span className="text-xs font-bold text-giz truncate">{p.nickname || p.name}</span>
+                      </div>
+                      <div className="flex items-center gap-1 shrink-0">
+                        <button
+                          id={`btn-quick-goal-${p.id}`}
+                          onClick={() => handleQuickGoal(p.id, teamB.id)}
+                          className="p-1.5 rounded-lg bg-capim/15 hover:bg-capim/30 text-sm transition-colors"
+                          title="Registrar gol"
+                        >
+                          ⚽
+                        </button>
+                        <button
+                          id={`btn-quick-assist-${p.id}`}
+                          disabled={!assistEnabled}
+                          onClick={() => handleQuickAssist(p.id, teamB.id)}
+                          className="p-1.5 rounded-lg bg-amber-500/15 hover:bg-amber-500/30 text-sm transition-colors disabled:opacity-25 disabled:cursor-not-allowed disabled:hover:bg-amber-500/15"
+                          title={assistEnabled ? 'Marcar assistência no último gol' : 'Marque um gol do time antes de dar assistência'}
+                        >
+                          🎯
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
               <button
                 id="btn-card-team-b"
                 onClick={() => setCardModalOpen({ teamId: teamB.id, type: 'yellow_card' })}
-                className="mt-1.5 text-[11px] font-bold text-giz/50 hover:text-amber-400 transition-colors"
+                className="mt-2.5 text-[11px] font-bold text-giz/50 hover:text-amber-400 transition-colors"
               >
                 + Cartão
               </button>
@@ -536,80 +639,6 @@ export const LiveScoreboard: React.FC<LiveScoreboardProps> = ({
                 })}
               </div>
             )}
-          </div>
-        </div>
-      )}
-
-      {/* Goal Modal */}
-      {goalModalOpen && (
-        <div
-          id="goal-registration-modal"
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
-          onClick={() => setGoalModalOpen(null)}
-        >
-          <div
-            className="w-full max-w-md bg-gramado-card border border-gramado-light rounded-3xl p-6 shadow-2xl"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <h3 className="text-lg font-black text-giz mb-1 flex items-center gap-2">
-              ⚽ Registrar Gol
-            </h3>
-            <p className="text-xs text-giz/50 mb-4">
-              Selecione o autor do gol e quem deu o passe (assistência).
-            </p>
-
-            <form onSubmit={handleRegisterGoal} className="space-y-4 text-xs">
-              <div>
-                <label className="text-giz/70 font-bold block mb-1">Autor do Gol ⚽</label>
-                <select
-                  required
-                  value={selectedScorerId}
-                  onChange={(e) => setSelectedScorerId(e.target.value)}
-                  className="w-full bg-gramado border border-giz/15 rounded-xl px-3 py-2 text-giz focus:outline-none focus:border-capim"
-                >
-                  <option value="">Selecione o artilheiro...</option>
-                  {(goalModalOpen.teamId === teamA?.id ? teamAPlayers : teamBPlayers).map((p) => (
-                    <option key={p.id} value={p.id}>
-                      {p.nickname || p.name} ({p.position})
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div>
-                <label className="text-giz/70 font-bold block mb-1">Assistência 🎯 (Opcional)</label>
-                <select
-                  value={selectedAssistId}
-                  onChange={(e) => setSelectedAssistId(e.target.value)}
-                  className="w-full bg-gramado border border-giz/15 rounded-xl px-3 py-2 text-giz focus:outline-none focus:border-capim"
-                >
-                  <option value="">Sem assistência (Gol individual)</option>
-                  {(goalModalOpen.teamId === teamA?.id ? teamAPlayers : teamBPlayers)
-                    .filter((p) => p.id !== selectedScorerId)
-                    .map((p) => (
-                      <option key={p.id} value={p.id}>
-                        {p.nickname || p.name} ({p.position})
-                      </option>
-                    ))}
-                </select>
-              </div>
-
-              <div className="flex items-center justify-end gap-2 pt-3 border-t border-gramado-light">
-                <button
-                  type="button"
-                  onClick={() => setGoalModalOpen(null)}
-                  className="px-4 py-2 bg-gramado-light text-giz/70 rounded-xl font-bold hover:bg-giz/15"
-                >
-                  Cancelar
-                </button>
-                <button
-                  type="submit"
-                  className="px-5 py-2 bg-capim hover:bg-capim text-giz rounded-xl font-bold shadow-lg transition-colors"
-                >
-                  Confirmar Gol
-                </button>
-              </div>
-            </form>
           </div>
         </div>
       )}

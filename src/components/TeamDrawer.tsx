@@ -11,7 +11,10 @@ import {
   Plus,
   Trash2,
   Layers,
-  Award
+  Award,
+  Pencil,
+  Check,
+  X
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { User as FirebaseUser } from 'firebase/auth';
@@ -39,6 +42,8 @@ export const TeamDrawer: React.FC<TeamDrawerProps> = ({
   const [teamsCount, setTeamsCount] = useState<number>(pelada?.teamsCount || 2);
   const [isDrawing, setIsDrawing] = useState(false);
   const [selectedPlayerToMove, setSelectedPlayerToMove] = useState<{ playerId: string; fromTeamId: string } | null>(null);
+  const [editingTeamId, setEditingTeamId] = useState<string | null>(null);
+  const [editingTeamName, setEditingTeamName] = useState('');
   const isAdmin = isPeladaAdmin(pelada, currentUser || null);
 
   if (!pelada) {
@@ -155,6 +160,33 @@ export const TeamDrawer: React.FC<TeamDrawerProps> = ({
     });
 
     setSelectedPlayerToMove(null);
+  };
+
+  // Rename a team (admin only)
+  const handleStartEditTeamName = (team: Team) => {
+    if (!isAdmin) return;
+    setEditingTeamId(team.id);
+    setEditingTeamName(team.name);
+  };
+
+  const handleSaveTeamName = () => {
+    if (!isAdmin || !editingTeamId) return;
+    const trimmed = editingTeamName.trim();
+
+    if (trimmed) {
+      onUpdatePelada({
+        ...pelada,
+        teams: pelada.teams.map((t) => (t.id === editingTeamId ? { ...t, name: trimmed } : t)),
+      });
+    }
+
+    setEditingTeamId(null);
+    setEditingTeamName('');
+  };
+
+  const handleCancelEditTeamName = () => {
+    setEditingTeamId(null);
+    setEditingTeamName('');
   };
 
   const handleShareWhatsApp = () => {
@@ -387,15 +419,60 @@ export const TeamDrawer: React.FC<TeamDrawerProps> = ({
                 {/* Top header with team color badge and Overall average */}
                 <div>
                   <div className="flex items-center justify-between mb-3">
-                    <div className="flex items-center gap-2.5">
+                    <div className="flex items-center gap-2.5 min-w-0 flex-1">
                       <div
-                        className="w-4 h-4 rounded-full border border-white/20 shadow-sm"
+                        className="w-4 h-4 rounded-full border border-white/20 shadow-sm shrink-0"
                         style={{ backgroundColor: team.colorHex }}
                       />
-                      <h3 className="text-base font-black text-giz">{team.name}</h3>
+                      {editingTeamId === team.id ? (
+                        <div className="flex items-center gap-1 flex-1 min-w-0">
+                          <input
+                            id={`input-team-name-${team.id}`}
+                            autoFocus
+                            value={editingTeamName}
+                            onChange={(e) => setEditingTeamName(e.target.value)}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter') handleSaveTeamName();
+                              if (e.key === 'Escape') handleCancelEditTeamName();
+                            }}
+                            onBlur={handleSaveTeamName}
+                            className="min-w-0 flex-1 bg-gramado border border-capim/50 rounded-lg px-2 py-1 text-sm font-black text-giz focus:outline-none focus:border-capim"
+                          />
+                          <button
+                            onMouseDown={(e) => e.preventDefault()}
+                            onClick={handleSaveTeamName}
+                            className="p-1 rounded-lg bg-capim/20 hover:bg-capim/30 text-capim-light shrink-0"
+                            title="Salvar"
+                          >
+                            <Check className="w-3.5 h-3.5" />
+                          </button>
+                          <button
+                            onMouseDown={(e) => e.preventDefault()}
+                            onClick={handleCancelEditTeamName}
+                            className="p-1 rounded-lg bg-gramado-light hover:bg-giz/15 text-giz/50 shrink-0"
+                            title="Cancelar"
+                          >
+                            <X className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-1.5 min-w-0">
+                          <h3 className="text-base font-black text-giz truncate">{team.name}</h3>
+                          {isAdmin && (
+                            <button
+                              id={`btn-edit-team-name-${team.id}`}
+                              onClick={() => handleStartEditTeamName(team)}
+                              className="p-1 rounded-lg text-giz/30 hover:text-giz/85 hover:bg-gramado-light transition-colors shrink-0"
+                              title="Editar nome do time"
+                            >
+                              <Pencil className="w-3 h-3" />
+                            </button>
+                          )}
+                        </div>
+                      )}
                     </div>
 
-                    <div className="flex items-center gap-1 bg-gramado px-2.5 py-1 rounded-xl border border-gramado-light">
+                    <div className="flex items-center gap-1 bg-gramado px-2.5 py-1 rounded-xl border border-gramado-light shrink-0">
                       <span className="text-[10px] text-giz/50 font-bold uppercase">OVR:</span>
                       <span className="text-xs font-black text-amber-400">{stats.avgOv}</span>
                     </div>
