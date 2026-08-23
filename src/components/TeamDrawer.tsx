@@ -15,9 +15,11 @@ import {
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { User as FirebaseUser } from 'firebase/auth';
-import { balanceTeams } from '../utils/teamBalancer';
+import { balanceTeams, createEmptyTeams } from '../utils/teamBalancer';
 import { generateTeamsDrawMessage, openWhatsAppWithText } from '../utils/whatsappGenerator';
 import { isPeladaAdmin } from '../utils/permissions';
+
+const UNASSIGNED = 'unassigned';
 
 interface TeamDrawerProps {
   pelada?: Pelada | null;
@@ -64,6 +66,10 @@ export const TeamDrawer: React.FC<TeamDrawerProps> = ({
     .map((id) => playersMap.get(id))
     .filter(Boolean) as Player[];
 
+  // Confirmed players not yet placed on any team (manual assignment pool)
+  const assignedPlayerIds = new Set(pelada.teams.flatMap((t) => t.playerIds));
+  const unassignedPlayers = confirmedPlayers.filter((p) => !assignedPlayerIds.has(p.id));
+
   // Run balanced draw with animation and confetti
   const handlePerformDraw = () => {
     if (!isAdmin) return;
@@ -97,7 +103,27 @@ export const TeamDrawer: React.FC<TeamDrawerProps> = ({
     }, 600);
   };
 
-  // Move or swap player between teams
+  // Create empty teams for fully manual assignment (admin only)
+  const handleCreateManualTeams = () => {
+    if (!isAdmin) return;
+
+    const hasExistingTeams = pelada.teams.some((t) => t.playerIds.length > 0);
+    if (hasExistingTeams) {
+      const confirmed = window.confirm(
+        'Isso vai apagar os times atuais e você vai montar do zero. Continuar?'
+      );
+      if (!confirmed) return;
+    }
+
+    onUpdatePelada({
+      ...pelada,
+      teamsCount,
+      teams: createEmptyTeams(teamsCount),
+    });
+    setSelectedPlayerToMove(null);
+  };
+
+  // Move or swap player between teams (or to/from the unassigned pool)
   const handleTransferPlayer = (targetTeamId: string) => {
     if (!isAdmin || !selectedPlayerToMove) return;
 
@@ -204,6 +230,17 @@ export const TeamDrawer: React.FC<TeamDrawerProps> = ({
               {isDrawing ? 'Sorteando e Equilibrando...' : 'Sortear Times Agora'}
             </button>
 
+            <button
+              id="btn-criar-times-manual"
+              disabled={!isAdmin}
+              onClick={handleCreateManualTeams}
+              title={isAdmin ? 'Criar times vazios para montar manualmente' : 'Só o administrador pode criar os times'}
+              className="px-3.5 py-2.5 bg-gramado-light hover:bg-giz/15 text-giz/85 border border-giz/15 rounded-2xl text-xs font-bold flex items-center gap-1.5 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              <Layers className="w-4 h-4 text-capim-light" />
+              Criar Times Manualmente
+            </button>
+
             {pelada.teams.length > 0 && (
               <button
                 id="btn-share-teams-whatsapp"
@@ -237,13 +274,100 @@ export const TeamDrawer: React.FC<TeamDrawerProps> = ({
         </div>
       )}
 
+      {/* Unassigned players pool (manual assignment) */}
+      {pelada.teams.length > 0 && (() => {
+        const isUnassignedTarget = selectedPlayerToMove && selectedPlayerToMove.fromTeamId !== UNASSIGNED;
+        return (
+          <div
+            id="unassigned-players-pool"
+            className={`bg-gramado-card/60 rounded-3xl border border-dashed ${
+              isUnassignedTarget ? 'border-amber-500/60 ring-2 ring-amber-500/20' : 'border-gramado-light'
+            } p-5`}
+          >
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-sm font-black text-giz flex items-center gap-2">
+                <Users className="w-4 h-4 text-giz/50" />
+                Sem Time
+                <span className="text-[10px] font-bold text-giz/40">({unassignedPlayers.length})</span>
+              </h3>
+              {isUnassignedTarget && (
+                <button
+                  id="btn-transfer-to-unassigned"
+                  onClick={() => handleTransferPlayer(UNASSIGNED)}
+                  className="px-3 py-1.5 bg-amber-500 hover:bg-amber-400 text-gramado rounded-xl text-[10px] font-black flex items-center gap-1.5 shadow-md transition-colors"
+                >
+                  <Plus className="w-3.5 h-3.5" /> Devolver para cá
+                </button>
+              )}
+            </div>
+
+            {unassignedPlayers.length === 0 ? (
+              <p className="text-xs text-giz/40">Todos os jogadores confirmados já estão em algum time.</p>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+                {unassignedPlayers.map((p) => {
+                  const isSelected = selectedPlayerToMove?.playerId === p.id;
+                  return (
+                    <div
+                      key={p.id}
+                      id={`unassigned-player-${p.id}`}
+                      className={`flex items-center justify-between p-2 rounded-xl border transition-all ${
+                        isSelected
+                          ? 'bg-amber-500/20 border-amber-500/50 text-amber-200'
+                          : 'bg-gramado/70 hover:bg-gramado border-gramado-light text-giz/85'
+                      }`}
+                    >
+                      <div
+                        className="flex items-center gap-2.5 cursor-pointer flex-1 min-w-0"
+                        onClick={() => onSelectPlayer(p)}
+                      >
+                        <img
+                          src={p.photoUrl}
+                          alt={p.name}
+                          referrerPolicy="no-referrer"
+                          className="w-8 h-8 rounded-lg object-cover border border-giz/15"
+                        />
+                        <div className="truncate">
+                          <p className="text-xs font-bold text-giz truncate">{p.nickname || p.name}</p>
+                          <p className="text-[10px] text-giz/50">
+                            {p.position} • OVR {p.overall}
+                          </p>
+                        </div>
+                      </div>
+
+                      <button
+                        id={`btn-assign-${p.id}`}
+                        disabled={!isAdmin}
+                        onClick={() =>
+                          setSelectedPlayerToMove(
+                            isSelected ? null : { playerId: p.id, fromTeamId: UNASSIGNED }
+                          )
+                        }
+                        className={`p-1 rounded-lg text-[10px] font-bold border transition-colors disabled:opacity-40 disabled:cursor-not-allowed ${
+                          isSelected
+                            ? 'bg-amber-500 text-gramado border-amber-400'
+                            : 'bg-gramado-light text-giz/50 hover:text-giz/85 border-giz/15'
+                        }`}
+                        title={isAdmin ? 'Colocar em um time' : 'Só o administrador pode mover jogadores entre times'}
+                      >
+                        <ArrowLeftRight className="w-3 h-3" />
+                      </button>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        );
+      })()}
+
       {/* Teams Grid */}
       {pelada.teams.length === 0 ? (
         <div className="text-center py-16 bg-gramado-card/40 rounded-3xl border border-gramado-light">
           <Shuffle className="w-12 h-12 text-giz/25 mx-auto mb-3" />
           <h3 className="text-base font-black text-giz">Nenhum time sorteado ainda</h3>
           <p className="text-xs text-giz/50 mt-1 max-w-md mx-auto">
-            Clique no botão acima para sortear os times de forma equilibrada com base no nível técnico (Overall) e posições de cada atleta.
+            Clique em "Sortear Times Agora" para um balanceamento automático por Overall e posição, ou em "Criar Times Manualmente" para montar você mesmo.
           </p>
         </div>
       ) : (

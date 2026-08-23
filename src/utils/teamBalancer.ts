@@ -20,6 +20,23 @@ const DEFAULT_TEAM_CONFIGS = [
   { name: 'Colete Amarelo', colorName: 'Amarelo', colorHex: '#eab308', bgHex: 'bg-yellow-500', borderHex: 'border-yellow-400' },
 ];
 
+export function createEmptyTeams(teamsCount: number = 2): Team[] {
+  const effectiveTeamsCount = Math.max(2, Math.min(teamsCount, DEFAULT_TEAM_CONFIGS.length));
+
+  return Array.from({ length: effectiveTeamsCount }, (_, idx) => {
+    const config = DEFAULT_TEAM_CONFIGS[idx % DEFAULT_TEAM_CONFIGS.length];
+    return {
+      id: `team-${idx + 1}-${Date.now().toString(36)}-${idx}`,
+      name: `Time ${config.name}`,
+      colorName: config.colorName,
+      colorHex: config.colorHex,
+      bgHex: config.bgHex,
+      borderHex: config.borderHex,
+      playerIds: [],
+    };
+  });
+}
+
 export function balanceTeams(
   confirmedPlayers: Player[],
   teamsCount: number = 2,
